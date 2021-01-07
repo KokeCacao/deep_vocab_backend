@@ -1,4 +1,6 @@
 import json
+
+from werkzeug.exceptions import InternalServerError
 from . import app, schema
 from .models.model import db
 from flask import Flask, Response, request, abort, render_template
@@ -7,9 +9,9 @@ from flask import Flask, Response, request, abort, render_template
 @app.route("/graphql", methods=["POST"])
 def graphql():
     if (request.data == None or len(request.data) < 1):
-        abort(404,
-              description="Invalid Request, request.data={}, len={}".format(
-                  request.data, len(request.data)))
+        raise Exception(
+            "404|[Warning] Invalid Request, data too short. request.data={}, len={}"
+            .format(request.data, len(request.data)))
 
     data = None
     try:
@@ -17,18 +19,48 @@ def graphql():
             request.data)  # turn unformatted json into json format
         print("[DEBUG] json = {}".format(data))
     except:
-        print("[Error] Can't parse to json: {}".format(request.data))
-        abort(404,
-              description="Invalid Request, request.data={}, len={}".format(
-                  request.data, len(request.data)))
+        raise Exception(
+            "404|[Warning] Invalid Request, can't parse to json. request.data={}, len={}"
+            .format(request.data, len(request.data)))
 
     result = schema.execute(data["query"])
 
+    errors = result.errors
+    extensions = result.extensions
+    invalid = result.invalid
+    to_dict = result.to_dict()
+
+    print("[DEBUG] errors = {}".format(errors))  # TODO: test when no error
+
+    try:
+        status = 200 if errors is None else int(
+            errors[0].message.split("|")[0])
+    except:
+        raise InternalServerError(
+            "Cannot parse error to string. This is not a client error.")
+    error_message = None if status == 200 else errors[0].message.split("|")[1]
+
+    print("[DEBUG] error code = {}, message = {}".format(
+        status, error_message))
+
+    if result.data is None:
+        error_message = "Invalid request"
+        status = 404
+
     json_result = json.dumps({
-        "data": result.data,
-        "extensions": None,
-        "errors": None
+        "data":
+        result.data,
+        "extensions":
+        extensions,
+        "errors": [
+            {
+                "message": error_message,
+                "path": None,
+                "extensions": None
+            },
+        ] if error_message is not None else
+        None,  # see: https://www.apollographql.com/docs/apollo-server/data/errors/
     })
     print("[DEBUG] result = {}".format(json_result))
 
-    return Response(response=json_result, status=200, mimetype='text/json')
+    return Response(response=json_result, status=status, mimetype='text/json')

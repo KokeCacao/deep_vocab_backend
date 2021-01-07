@@ -11,12 +11,6 @@ class Auth(graphene.ObjectType):
     refresh_token = graphene.String()
     wx_token = graphene.String()
 
-    @staticmethod
-    def parse_kwargs(**kwargs):
-        kwargs['uuid'] = str(kwargs['uuid'])
-        print("[DEBUG] parsed kwargs = {}".format(kwargs))
-        return kwargs
-
 
 class AuthDB(db.Model):
     """ DATABASE FORMAT
@@ -28,6 +22,7 @@ class AuthDB(db.Model):
     refresh_token: str(120); non-unique; null;
     wx_token: str(120); non-unique; null;
     """
+    __tablename__ = 'authDB'
     uuid = db.Column(db.String(36), primary_key=True)
     email = db.Column(db.String(120), unique=True)
     user_name = db.Column(db.String(80), unique=True)
@@ -35,6 +30,8 @@ class AuthDB(db.Model):
     access_token = db.Column(db.String(120), unique=False)
     refresh_token = db.Column(db.String(120), unique=False)
     wx_token = db.Column(db.String(120), unique=False)
+
+    user_db = db.relationship("UserDB", back_populates="auth_db")
 
     def __init__(self, uuid, user_name, password, email, access_token,
                  refresh_token, wx_token):
@@ -56,13 +53,8 @@ class AuthDB(db.Model):
                     wx_token=self.wx_token)
 
     @staticmethod
-    def add(uuid,
-            user_name=None,
-            password=None,
-            email=None,
-            access_token=None,
-            refresh_token=None,
-            wx_token=None):
+    def add(uuid, user_name, password, email, access_token, refresh_token,
+            wx_token):
         assert (AuthDB.get(uuid) is None)
         auth_db = AuthDB(uuid=uuid,
                          user_name=user_name,
@@ -79,6 +71,14 @@ class AuthDB(db.Model):
         return AuthDB.query.get(uuid)
 
     @staticmethod
+    def get_by_user_name(user_name):
+        return AuthDB.query.filter(AuthDB.user_name == user_name).first()
+
+    @staticmethod
+    def get_by_email(email):
+        return AuthDB.query.filter(AuthDB.email == email).first()
+
+    @staticmethod
     def update(user_db, **kwargs):
         assert (user_db is not None)
         if 'user_name' in kwargs: user_db.user_name = kwargs['user_name']
@@ -90,9 +90,3 @@ class AuthDB(db.Model):
             user_db.refresh_token = kwargs['refresh_token']
         if 'wx_token' in kwargs: user_db.wx_token = kwargs['wx_token']
         return user_db
-
-
-from .. import app
-with app.app_context():
-    print("Creating Database for auth_model.py")
-    db.create_all()
