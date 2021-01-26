@@ -32,6 +32,7 @@ class AuthDB(db.Model):
     wx_token = db.Column(db.String(120), unique=False)
 
     user_db = db.relationship("UserDB", back_populates="auth_db")
+    mark_color_db = db.relationship("MarkColorDB", back_populates="auth_db")
 
     def __init__(self, uuid, user_name, password, email, access_token,
                  refresh_token, wx_token):
@@ -72,11 +73,15 @@ class AuthDB(db.Model):
 
     @staticmethod
     def get_by_user_name(user_name):
-        return AuthDB.query.filter(AuthDB.user_name == user_name).first()
+        q = AuthDB.query.filter(AuthDB.user_name == user_name)
+        assert (q.count() <= 1)
+        return q.first()
 
     @staticmethod
     def get_by_email(email):
-        return AuthDB.query.filter(AuthDB.email == email).first()
+        q = AuthDB.query.filter(AuthDB.email == email)
+        assert (q.count() <= 1)
+        return q.first()
 
     @staticmethod
     def update(user_db, **kwargs):

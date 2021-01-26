@@ -1,4 +1,5 @@
 import graphene
+from .utils.util import parse_kwargs
 from .models.model import db
 from .models.user_model import User, UserDB
 from .models.auth_model import Auth
@@ -28,7 +29,7 @@ class UserQuery(object):
 
     EXAMPLE INPUT:
     query {
-        user(userName: "koke2") {
+        user(userName: "user3") {
             uuid
             displayName
             userName
@@ -49,13 +50,6 @@ class UserQuery(object):
         def valid_kwargs(kwargs):
             return ("uuid" in kwargs and "user_name" not in kwargs) or (
                 "uuid" not in kwargs and "user_name" in kwargs)
-
-        # TODO: make parse_kwargs into a class so that I only have to write once
-        def parse_kwargs(kwargs):
-            if "uuid" in kwargs:
-                kwargs["uuid"] = str(kwargs["uuid"])
-                print("[DEBUG] parsed kwargs = {}".format(kwargs))
-            return kwargs
 
         if not valid_kwargs(kwargs):
             raise Exception("400|[Warning] invalid kwargs combinations")

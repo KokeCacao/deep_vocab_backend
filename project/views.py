@@ -1,9 +1,10 @@
 import json
+import os
 
 from werkzeug.exceptions import InternalServerError
 from . import app, schema
 from .models.model import db
-from flask import Flask, Response, request, abort, render_template
+from flask import Flask, Response, request, abort, render_template, current_app, send_from_directory
 
 
 @app.route("/graphql", methods=["POST"])
@@ -64,3 +65,15 @@ def graphql():
     print("[DEBUG] result = {}".format(json_result))
 
     return Response(response=json_result, status=status, mimetype='text/json')
+
+
+# TODO: requires access token
+@app.route("/download/<path:filename>", methods=["GET"])
+def download(filename):
+    print("Sending file: {}".format(
+        os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'],
+                     filename)))
+    return send_from_directory(directory=os.path.join(
+        current_app.root_path, app.config['DOWNLOAD_FOLDER']),
+                               filename=filename,
+                               as_attachment=False)

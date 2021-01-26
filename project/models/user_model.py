@@ -15,7 +15,7 @@ class User(graphene.ObjectType):
 
 class UserDB(db.Model):
     """ DATABASE FORMAT
-    uuid: str(36); key; non-null;
+    uuid: str(36); key; non-null; foreign-key("authDB.uuid");
     display_name: str(120); null;
     user_name: str(80); unique; null;
     avatar_url: str(120); non-unique; null;

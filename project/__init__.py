@@ -21,6 +21,9 @@ app = Flask(__name__)
 #         raise e
 #     pass
 
+# file download stuff
+app.config['DOWNLOAD_FOLDER'] = "download/"
+
 # flask-JWT stuff
 from flask_graphql_auth import GraphQLAuth
 app.config[

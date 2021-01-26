@@ -1,0 +1,83 @@
+{
+   "header":{
+      "name":"listname",
+      "id":0,
+      "edition":"2021-01-23T02:26:15.196899"
+   },
+   "vocabs":[
+      {
+         "id":"0",
+         "edition":"2021-01-23T02:26:15.196899",
+         "listId":0,
+         "vocab":"First Vocab",
+         "type":"adj",
+         "mainTranslation":"mainTrans",
+         "otherTranslation":[
+            "夸张的; 大言不惭的",
+            "语言夸张的",
+            "夸张"
+         ],
+         "mainSound":"sound",
+         "otherSound":[
+            "sound"
+         ],
+         "englishTranslation":"engtrans",
+         "comments":[
+            {
+               "uuid":"uuid",
+               "userName":"user",
+               "dateTime":"2021-01-23T02:26:15.196092",
+               "message":"message",
+               "avatarUrl":"avatar",
+               "likes":233,
+               "isLike":false
+            }
+         ],
+         "confusingWordId":[
+            "grand: 大的"
+         ],
+         "memTips":"grandi: 很大的; loquent: (形容词)感觉",
+         "exampleSentences":[
+            "example"
+         ],
+         "nthWord":233,
+         "nthAppear":0,
+         "markColors":[
+            {
+               "color":"black",
+               "time":"2021-01-23T02:26:15.196446"
+            }
+         ],
+         "editedMeaning":"",
+         "bookMarked":false,
+         "questionMark":false,
+         "starMark":false,
+         "pinMark":false,
+         "addedMark":false
+      },
+      {
+         "id":"1",
+         "edition":"2021-01-23T02:26:15.196899",
+         "listId":0,
+         "vocab":"Second Vocab",
+         "type":"adj",
+         "mainTranslation":"mainTrans",
+         "otherTranslation":[
+            "other",
+            "trans"
+         ],
+         "mainSound":"sound",
+         "otherSound":[
+            "sound"
+         ],
+         "englishTranslation":"engtrans",
+         "confusingWordId":[
+            "confuse"
+         ],
+         "memTips":"tip",
+         "exampleSentences":[
+            "example"
+         ]
+      }
+   ]
+}
