@@ -42,6 +42,12 @@
          ],
          "nthWord":233,
          "nthAppear":0,
+         "markColors":[
+            {
+               "color":"black",
+               "time":"2021-01-23T02:26:15.196446"
+            }
+         ],
          "editedMeaning":"",
          "bookMarked":false,
          "questionMark":false,

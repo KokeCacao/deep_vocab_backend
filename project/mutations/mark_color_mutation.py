@@ -13,13 +13,13 @@ from flask_graphql_auth import (
 
 class MarkColorMutation(graphene.Mutation):
     """
-    INPUT: ([uuid, user_name], access_token, ...)
+    INPUT: ([uuid, user_name], access_token, vocab_id, index, color, time)
     DO: add or update mark_color if access_token in database
     OUTPUT: (* | access_token in database), (None | access_token in database)
 
     EXAMPLE INPUT:
     mutation {
-        markColor(uuid: "2d480cd1-7e8b-4040-a81e-76191e4da0e5", accessToken: "token", index: "0", color: "black", time: "2021-01-23T02:26:15.196092") {
+        markColor(uuid: "2d480cd1-7e8b-4040-a81e-76191e4da0e5", accessToken: "token", vocabId: "id", index: 0, color: black, time: "2021-01-23T02:26:15.196092") {
             index
             color
             time
@@ -35,10 +35,12 @@ class MarkColorMutation(graphene.Mutation):
         uuid = graphene.String(required=False)
         access_token = graphene.String(required=True)
         user_name = graphene.String(required=False)
+        vocab_id = graphene.String(required=True)
         index = graphene.Int(required=True)
         color = graphene.Enum.from_enum(ColorModel)(required=True)
-        time = graphene.DateTime(required=False)  # TODO
+        time = graphene.DateTime(required=True)
 
+    vocab_id = graphene.String()
     index = graphene.Int()
     color = graphene.Enum.from_enum(ColorModel)()
     time = graphene.DateTime()
@@ -78,19 +80,23 @@ class MarkColorMutation(graphene.Mutation):
             if index < 0: raise Exception("400|[Warning] index < 0")
 
             # make sure index-1 already exist in database or index=0
-            if index != 0 and MarkColorDB.get_by_uuid_index(
-                    auth_db.uuid, index - 1) == None:
+            if index != 0 and MarkColorDB.get_by_uuid_vocab_id_index(
+                    auth_db.uuid, kwargs["vocab_id"], index - 1) == None:
                 raise Exception(
                     "400|[Warning] index-1 does not exist in database")
 
             # if index already exist in database, return such entry
-            mark_color_db = MarkColorDB.get_by_uuid_index(auth_db.uuid, index)
+            mark_color_db = MarkColorDB.get_by_uuid_vocab_id_index(
+                auth_db.uuid, kwargs["vocab_id"], index)
             if mark_color_db != None:
-              MarkColorDB.update(mark_color_db, color=kwargs["color"], time=kwargs["time"])
-              return mark_color_db.to_graphql_object()
+                MarkColorDB.update(mark_color_db,
+                                   color=kwargs["color"],
+                                   time=kwargs["time"])
+                return mark_color_db.to_graphql_object()
 
             # else create new entry
             mark_color_db = MarkColorDB.add(uuid=auth_db.uuid,
+                                            vocab_id=kwargs["vocab_id"],
                                             index=kwargs["index"],
                                             color=kwargs["color"],
                                             time=kwargs["time"])

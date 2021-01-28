@@ -18,19 +18,19 @@ class UserDB(db.Model):
     uuid: str(36); key; non-null; foreign-key("authDB.uuid");
     display_name: str(120); null;
     user_name: str(80); unique; null;
-    avatar_url: str(120); non-unique; null;
-    level: int; non-unique; 0;
-    xp: int; non-unique; 0;
+    avatar_url: str(120); non-unique; null; # TODO: maybe increase the length to allow longer? or do internal storage
+    level: int; non-unique; default(0);
+    xp: int; non-unique; default(0);
     """
     __tablename__ = 'userDB'
     uuid = db.Column(db.String(36),
                      db.ForeignKey("authDB.uuid"),
                      primary_key=True)
-    display_name = db.Column(db.String(120))
-    user_name = db.Column(db.String(80), unique=True)
-    avatar_url = db.Column(db.String(120))
-    level = db.Column(db.Integer)
-    xp = db.Column(db.Integer)
+    display_name = db.Column(db.String(120), nullable=True)
+    user_name = db.Column(db.String(80), unique=True, nullable=True)
+    avatar_url = db.Column(db.String(120), nullable=True)
+    level = db.Column(db.Integer, default=0)
+    xp = db.Column(db.Integer, default=0)
 
     # see: https://docs.sqlalchemy.org/en/13/orm/tutorial.html
     # or: https://docs.sqlalchemy.org/en/13/orm/backref.html#relationships-backref

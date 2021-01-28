@@ -15,24 +15,25 @@ class Auth(graphene.ObjectType):
 class AuthDB(db.Model):
     """ DATABASE FORMAT
     uuid: str(36); key; non-null;
-    email: str(120); unique; null;
-    user_name: str(80); unique; null;
-    password: str(120); unique; null;
+    email: str(120); unique; non-null;
+    user_name: str(80); unique; non-null;
+    password: str(120); unique; non-null;
     access_token: str(120); non-unique; null;
     refresh_token: str(120); non-unique; null;
     wx_token: str(120); non-unique; null;
     """
     __tablename__ = 'authDB'
     uuid = db.Column(db.String(36), primary_key=True)
-    email = db.Column(db.String(120), unique=True)
-    user_name = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(120), unique=False)
-    access_token = db.Column(db.String(120), unique=False)
-    refresh_token = db.Column(db.String(120), unique=False)
-    wx_token = db.Column(db.String(120), unique=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    user_name = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=False, nullable=False)
+    access_token = db.Column(db.String(120), unique=False, nullable=True)
+    refresh_token = db.Column(db.String(120), unique=False, nullable=True)
+    wx_token = db.Column(db.String(120), unique=False, nullable=True)
 
     user_db = db.relationship("UserDB", back_populates="auth_db")
     mark_color_db = db.relationship("MarkColorDB", back_populates="auth_db")
+    user_vocab_db = db.relationship("UserVocabDB", back_populates="auth_db")
 
     def __init__(self, uuid, user_name, password, email, access_token,
                  refresh_token, wx_token):

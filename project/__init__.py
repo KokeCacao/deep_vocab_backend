@@ -49,6 +49,8 @@ with app.app_context():
 
 from .query import Query
 from .mutation import Mutation
+# Query fields can be executed in parallel by the GraphQL engine while Mutation top-level fields MUST execute serially
+# See: https://stackoverflow.com/questions/48003767/what-is-the-difference-between-mutation-and-query
 schema = graphene.Schema(query=Query, mutation=Mutation, auto_camelcase=True)
 
 # We need to make sure Flask knows about its views before we run
