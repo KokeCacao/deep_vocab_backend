@@ -81,6 +81,10 @@ class MarkColorDB(db.Model):
         return MarkColorDB.query.get(id)
 
     @staticmethod
+    def get_by_uuid(uuid):
+        return MarkColorDB.query.filter(MarkColorDB.uuid == uuid).all()
+
+    @staticmethod
     def get_by_uuid_vocab_id(uuid, vocab_id):
         return MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
             MarkColorDB.vocab_id == vocab_id).all()
