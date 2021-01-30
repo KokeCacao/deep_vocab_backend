@@ -1,4 +1,5 @@
 import graphene
+from sqlalchemy.sql.expression import or_
 
 from .model import db
 
@@ -105,6 +106,11 @@ class UserVocabDB(db.Model):
     @staticmethod
     def get(id):
         return UserVocabDB.query.get(id)
+
+    @staticmethod
+    def gets(vocab_ids):
+        return UserVocabDB.query.filter(
+            or_(*[UserVocabDB.vocab_id == x for x in vocab_ids])).all()
 
     @staticmethod
     def get_by_uuid_vocab_id(uuid, vocab_id):

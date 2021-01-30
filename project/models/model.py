@@ -5,7 +5,7 @@ from .. import app
 
 class SQLiteAlchemy(SQLAlchemy):
     def apply_driver_hacks(self, app, info, options):
-        options.update({'echo': True})
+        options.update({'echo': False})
         super(SQLiteAlchemy, self).apply_driver_hacks(app, info, options)
 
 

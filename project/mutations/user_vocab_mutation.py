@@ -4,7 +4,7 @@ from werkzeug.exceptions import InternalServerError
 from ..utils.util import parse_kwargs
 from ..models.model import db
 from ..models.auth_model import AuthDB
-from ..models.user_vocab_model import UserVocab, UserVocabDB
+from ..models.user_vocab_model import UserVocabDB
 from ..models.user_model import UserDB
 from flask_graphql_auth import (
     get_jwt_identity,

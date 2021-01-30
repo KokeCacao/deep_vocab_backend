@@ -35,12 +35,12 @@ class TestMutation(graphene.Mutation):
 
     @staticmethod
     def mutate(parent, info, **kwargs):
-        vocab_db = vocab_db = VocabDB.get("vocab_id")
+        vocab_db = vocab_db = VocabDB.get("1")
         if vocab_db == None:
             vocab_db = VocabDB.add(
-                vocab_id="vocab_id",
+                vocab_id="1",
                 edition=kwargs["edition"],
-                list_ids=[0],
+                list_ids=[0, 1],
                 vocab="vocab",
                 type=TypeModel.adj,
                 main_translation="main_translation",
