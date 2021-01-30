@@ -1,4 +1,3 @@
-from project.models.mark_color_model import MarkColor
 import graphene
 
 from datetime import datetime
@@ -55,7 +54,6 @@ class VocabUserVocab(Vocab, UserVocab):
             self.pin_mark = user_vocab.pin_mark
             self.added_mark = user_vocab.added_mark
         if mark_colors_list is not None and mark_colors_list != []:
-            print("set successful! {}".format(mark_colors_list))
             self.mark_colors = mark_colors_list
         return self
 
