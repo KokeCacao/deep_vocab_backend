@@ -111,11 +111,10 @@ class UserVocab(graphene.ObjectType):
     star_mark = graphene.Boolean()
     pin_mark = graphene.Boolean()
     added_mark = graphene.Boolean()
+    mark_colors = graphene.List(MarkColor)
 
 
 class VocabUserVocab(Vocab, UserVocab):
-    mark_colors = graphene.List(MarkColor)  # TODO: add to UserVocab
-
     def from_vocab_and_user_vocab(self, vocab, user_vocab, mark_colors_list):
         if vocab is not None:
             self.vocab_id = vocab.vocab_id
