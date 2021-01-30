@@ -88,6 +88,7 @@ class VocabDB(db.Model):
 
     @staticmethod
     def gets(vocab_ids, sorted=False):
+        if len(vocab_ids) == 0: return []
         result = VocabDB.query.filter(
             or_(*[VocabDB.vocab_id == x for x in vocab_ids]))
         if sorted: return result.order_by(VocabDB.vocab.asc()).all()

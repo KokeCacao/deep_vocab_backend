@@ -76,6 +76,7 @@ class UserVocabDB(db.Model):
 
     @staticmethod
     def gets(vocab_ids):
+        if len(vocab_ids) == 0: return []
         return UserVocabDB.query.filter(
             or_(*[UserVocabDB.vocab_id == x for x in vocab_ids])).all()
 
