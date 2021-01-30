@@ -1,6 +1,6 @@
 import graphene
 
-from ..utils.util import parse_kwargs
+from ..utils.util import parse_kwargs, check_jwt_with_uuid
 from flask_graphql_auth import (
     get_jwt_identity,
     create_access_token,
@@ -34,17 +34,8 @@ class RefreshMutation(graphene.Mutation):
     @staticmethod
     @mutation_jwt_refresh_token_required
     def mutate(parent, info, **kwargs):
-        def valid_kwargs(kwargs):
-            return True
-
-        if not valid_kwargs(kwargs):
-            raise Exception("400|[Warning] invalid kwargs combinations")
         kwargs = parse_kwargs(kwargs)
+        auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
 
-        if ("jwt_error" in kwargs):
-            raise Exception("400|[Warning] JWT incorrect")
-        uuid = get_jwt_identity()
-        if (uuid != kwargs["uuid"]):
-            raise Exception("400|[Warning] incorrect uuid")
         return RefreshMutation(access_token=create_access_token(identity=uuid),
                                refresh_token=kwargs["refresh_token"])

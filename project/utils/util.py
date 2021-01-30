@@ -1,5 +1,8 @@
 import hashlib
 
+from werkzeug.exceptions import InternalServerError
+from ..models.auth_model import AuthDB
+
 
 def parse_kwargs(kwargs):
     if "uuid" in kwargs:
@@ -11,3 +14,18 @@ def parse_kwargs(kwargs):
             (kwargs["password"] + salt).encode("utf-8")).hexdigest()
         print("[DEBUG] parsed password = {}".format(kwargs))
     return kwargs
+
+
+def check_jwt_with_uuid(kwargs, jwt_identity):
+    assert "uuid" in kwargs
+    if "jwt_error" in kwargs: raise Exception("400|[Warning] JWT incorrect.")
+    if jwt_identity != kwargs["uuid"]:
+        raise Exception("400|[Warning] incorrect uuid.")
+
+    auth_db = AuthDB.get(kwargs["uuid"])
+
+    if auth_db is None:
+        raise InternalServerError(
+            "for some reason user {} doesn't have auth database.".format(
+                kwargs["uuid"]))
+    return auth_db, kwargs["uuid"]

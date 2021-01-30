@@ -40,11 +40,6 @@ class CreateUserMutation(graphene.Mutation):
 
     @staticmethod
     def mutate(parent, info, **kwargs):
-        def valid_kwargs(kwargs):
-            return "user_name" in kwargs and "password" in kwargs and "email" in kwargs
-
-        if not valid_kwargs(kwargs):
-            raise Exception("400|[Warning] invalid kwargs combinations")
         kwargs = parse_kwargs(kwargs)
 
         uuid = str(UUID.uuid4())
@@ -64,7 +59,7 @@ class CreateUserMutation(graphene.Mutation):
                        xp=0)
             db.session.commit()
         except:
-            raise Exception("400|[Warning] user_name or email already exists")
+            raise Exception("400|[Warning] user_name or email already exists.")
 
         return CreateUserMutation(uuid=uuid,
                                   access_token=create_access_token(uuid),

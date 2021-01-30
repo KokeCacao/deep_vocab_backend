@@ -50,13 +50,13 @@ class AuthMutation(graphene.Mutation):
                     ("user_name" not in kwargs and "email" in kwargs))
 
         if not valid_kwargs(kwargs):
-            raise Exception("400|[Warning] invalid kwargs combinations")
+            raise Exception("400|[Warning] invalid kwargs combinations.")
         kwargs = parse_kwargs(kwargs)
 
         # TODO: implement Wechat Login
         if "wx_token" in kwargs:
             raise Exception(
-                "400|[Warning] you should not provide wx_token because I have not implement it"
+                "400|[Warning] you should not provide wx_token because I have not implement it."
             )
 
         auth_db = None
@@ -65,10 +65,10 @@ class AuthMutation(graphene.Mutation):
         if "email" in kwargs: auth_db = AuthDB.get_by_email(kwargs["email"])
 
         if (auth_db is None):
-            raise Exception("400|[Warning] no such user in database")
+            raise Exception("400|[Warning] no such user in database.")
 
         if kwargs["password"] != auth_db.password:
-            raise Exception("400|[Warning] invalid password")
+            raise Exception("400|[Warning] invalid password.")
 
         # TODO: log user out if changed something important
         return AuthMutation(
