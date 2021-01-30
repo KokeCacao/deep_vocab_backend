@@ -97,10 +97,8 @@ class UserVocabDB(db.Model):
         if 'vocab_id' in kwargs:
             raise InternalServerError(
                 "[UserVocabModel] vocab_id can't be changed.")
-        # TODO: make use of these two fields
         if 'nth_word' in kwargs:
             user_vocab_db.nth_word = kwargs['nth_word']
-        # TODO: make use of these two fields
         if 'nth_appear' in kwargs:
             user_vocab_db.nth_appear = kwargs['nth_appear']
         if 'edited_meaning' in kwargs:

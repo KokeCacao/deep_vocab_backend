@@ -3,6 +3,7 @@ import graphene
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
 from ..models.model import db, ColorModel
 from ..models.mark_color_model import MarkColorDB
+from ..models.user_vocab_model import UserVocabDB
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -78,6 +79,11 @@ class MarkColorMutation(graphene.Mutation):
                                         index=kwargs["index"],
                                         color=kwargs["color"],
                                         time=kwargs["time"])
+        # add nth_word when needed
+        if index == 0:
+            user_vocab_db = UserVocabDB.gets(kwargs["vocab_id"])
+            UserVocabDB.update(user_vocab_db,
+                               nth_word=user_vocab_db.nth_word + 1)
 
         db.session.commit()
         return MarkColorMutation(

@@ -18,7 +18,6 @@ from .mutations.list_download_mutation import ListDownloadMutation
 # *: means output all fields
 # -: means cannot input this argument, or not included
 class Mutation(graphene.ObjectType):
-    # TODO: standarlize and document database models
     # Flask will only create table when such import of DB is under one of mutation
     test = TestMutation.Field()
     auth = AuthMutation.Field()
