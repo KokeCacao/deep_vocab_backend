@@ -148,9 +148,11 @@ class VocabDB(db.Model):
         return VocabDB.query.get(vocab_id)
 
     @staticmethod
-    def gets(vocab_ids):
-        return VocabDB.query.filter(
-            or_(*[VocabDB.vocab_id == x for x in vocab_ids])).all()
+    def gets(vocab_ids, sorted=False):
+        result = VocabDB.query.filter(
+            or_(*[VocabDB.vocab_id == x for x in vocab_ids]))
+        if sorted: return result.order_by(VocabDB.vocab.asc()).all()
+        else: return result.all()
 
     @staticmethod
     def update(user_vocab_db, **kwargs):

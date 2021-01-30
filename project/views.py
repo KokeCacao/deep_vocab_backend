@@ -123,6 +123,22 @@ def secure_download(**kwargs):
                       confusingWordId
                       memTips
                       exampleSentences
+                      nthWord
+                      nthAppear
+                      editedMeaning
+                      bookMarked
+                      questionMark
+                      starMark
+                      pinMark
+                      addedMark
+                      markColors {{
+                          id
+                          vocabId
+                          uuid
+                          index
+                          color
+                          time
+                      }}
                   }}
               }}
            }}""".format(uuid=kwargs["uuid"],

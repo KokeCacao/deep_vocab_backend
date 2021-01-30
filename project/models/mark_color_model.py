@@ -19,7 +19,13 @@ class MarkColor(graphene.ObjectType):
     uuid = graphene.UUID()
     index = graphene.Int()
     # See: https://docs.graphene-python.org/en/latest/types/enums/, example: https://github.com/graphql-python/graphene/issues/273
+
+    # graphene.Enum.from_enum(ColorModel) can't be used twice without storing the value
+    # See: https://github.com/graphql-python/graphene-sqlalchemy/issues/211
+    from functools import lru_cache
+    graphene.Enum.from_enum = lru_cache(maxsize=None)(graphene.Enum.from_enum)
     color = graphene.Enum.from_enum(ColorModel)()
+
     # See: https://docs.graphene-python.org/en/latest/types/scalars/
     time = graphene.DateTime()
 
@@ -81,13 +87,27 @@ class MarkColorDB(db.Model):
         return MarkColorDB.query.get(id)
 
     @staticmethod
-    def get_by_uuid(uuid):
-        return MarkColorDB.query.filter(MarkColorDB.uuid == uuid).all()
+    def get_by_uuid(uuid, sorted=False):
+        result = MarkColorDB.query.filter(MarkColorDB.uuid == uuid)
+        if sorted: return result.order_by(MarkColorDB.time.asc()).all()
+        else: return result.all()
 
     @staticmethod
     def get_by_uuid_vocab_id(uuid, vocab_id):
         return MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
             MarkColorDB.vocab_id == vocab_id).all()
+
+    @staticmethod
+    def get_by_uuid_sort_to_vocab_id_dict(uuid, sorted=False):
+        mark_color_dbs = MarkColorDB.get_by_uuid(uuid, sorted=sorted)
+
+        # vocab_dict = {vocab_id: [MarkColor]}
+        vocab_dict = dict()
+        for mark_color_db in mark_color_dbs:
+            mark_colors = vocab_dict.setdefault(mark_color_db.vocab_id, [])
+            mark_colors.append(mark_color_db)
+            vocab_dict[mark_color_db.vocab_id] = mark_colors
+        return vocab_dict
 
     @staticmethod
     def get_by_uuid_vocab_id_index(uuid, vocab_id, index):

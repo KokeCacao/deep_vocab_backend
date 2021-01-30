@@ -86,23 +86,16 @@ class RefreshVocabMutation(graphene.Mutation):
                        kwargs else kwargs["uuid"]))
         else:
             # TODO: set kwargs["uuid"] before using it if "uuid" not in kwargs, do the same for other mutations
-            mark_color_dbs = MarkColorDB.get_by_uuid(kwargs["uuid"])
 
-            # sort by DateTime begin with old to new
-            mark_color_dbs.sort(key=lambda mark_color_db: mark_color_db.time,
-                                reverse=False)
-
-            # vocab_dict = {vocab_id: [MarkColor]}
-            vocab_dict = dict()
-            for mark_color_db in mark_color_dbs:
-                mark_colors = vocab_dict.setdefault(mark_color_db.vocab_id, [])
-                mark_colors.append(mark_color_db.color)
-                vocab_dict[mark_color_db.vocab_id] = mark_colors
+            # mark_color_dict = {vocab_id: [MarkColor]}
+            mark_color_dict = MarkColorDB.get_by_uuid_sort_to_vocab_id_dict(
+                kwargs["uuid"], sorted=True)
 
             # selected = [vocab_id that has last mark == MarkColor.black]
             selected = [
-                key for key, value in vocab_dict.items()
-                if value[-1] == ColorModel.black
+                vocab_id
+                for vocab_id, mark_color_dbs in mark_color_dict.items()
+                if mark_color_dbs[-1].color == ColorModel.black
             ]
 
             # TODO: if client only wants vocabId, return here, else continue

@@ -1,3 +1,4 @@
+from project.models.mark_color_model import MarkColor
 import graphene
 
 from datetime import datetime
@@ -7,6 +8,7 @@ from ..models.model import db
 from ..models.auth_model import AuthDB
 from ..models.user_vocab_model import UserVocabDB, UserVocab
 from ..models.vocab_model import VocabDB, Vocab
+from ..models.mark_color_model import MarkColor, MarkColorDB
 from ..models.user_model import UserDB
 from flask_graphql_auth import (
     get_jwt_identity,
@@ -23,7 +25,9 @@ class VocabListHeader(graphene.ObjectType):
 
 
 class VocabUserVocab(Vocab, UserVocab):
-    def from_vocab_and_user_vocab(self, vocab, user_vocab):
+    mark_colors = graphene.List(MarkColor)  # TODO: add to UserVocab
+
+    def from_vocab_and_user_vocab(self, vocab, user_vocab, mark_colors_list):
         if vocab is not None:
             self.vocab_id = vocab.vocab_id
             self.edition = vocab.edition
@@ -50,6 +54,9 @@ class VocabUserVocab(Vocab, UserVocab):
             self.star_mark = user_vocab.star_mark
             self.pin_mark = user_vocab.pin_mark
             self.added_mark = user_vocab.added_mark
+        if mark_colors_list is not None and mark_colors_list != []:
+            print("set successful! {}".format(mark_colors_list))
+            self.mark_colors = mark_colors_list
         return self
 
 
@@ -98,7 +105,8 @@ class ListDownloadMutation(graphene.Mutation):
                     "list_id": 0,
                     "edition":
                     datetime.fromisoformat("2021-01-23T02:26:15.196899"),
-                    "vocab_ids": {"vocab_id", "0", "1"}
+                    "vocab_ids":
+                    set(str(vocab_int) for vocab_int in range(1, 100))
                 },
                 1: {
                     "name": "list_name",
@@ -111,18 +119,28 @@ class ListDownloadMutation(graphene.Mutation):
             header_data = list_header.get(kwargs["list_id"])
 
             # get vocab data
-            vocab_dbs = VocabDB.gets(header_data.get("vocab_ids", {}))
-            vocab_ids = (vocab_db.vocab_id for vocab_db in vocab_dbs)
+            # TODO: change all sort to order by: https://blog.csdn.net/aimill/article/details/80812817
+            vocab_dbs = VocabDB.gets(header_data.get("vocab_ids", {}),
+                                     sorted=True)
+            vocab_ids = [vocab_db.vocab_id for vocab_db in vocab_dbs]
 
             # get user vocab data
             user_vocab_dbs = (UserVocabDB.get_by_uuid_vocab_id(
                 kwargs["uuid"], vocab_id) for vocab_id in vocab_ids)
 
+            # get mark_colo_dict as dictionary of vocab_id and markcolor list
+            mark_color_dict = MarkColorDB.get_by_uuid_sort_to_vocab_id_dict(
+                kwargs["uuid"])
+            mark_colorses = (mark_color_dict.get(vocab_id, [])
+                             for vocab_id in vocab_ids)
+
             # combine them
-            combined = (
-                VocabUserVocab().from_vocab_and_user_vocab(
-                    vocab_db, user_vocab_db)
-                for vocab_db, user_vocab_db in zip(vocab_dbs, user_vocab_dbs))
+            combined = (VocabUserVocab().from_vocab_and_user_vocab(
+                vocab=vocab_db,
+                user_vocab=user_vocab_db,
+                mark_colors_list=mark_colors)
+                        for vocab_db, user_vocab_db, mark_colors in zip(
+                            vocab_dbs, user_vocab_dbs, mark_colorses))
 
             return ListDownloadMutation(header=VocabListHeader(
                 name=header_data.get("name"),
