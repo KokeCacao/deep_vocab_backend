@@ -22,8 +22,8 @@ class UserVocabDB(db.Model):
     """ DATABASE FORMAT
     id: int; key; non-null; auto-increment;
     uuid: str(36); non-null; non-unique; foreign-key("authDB.uuid");
-    vocab_id = str(36); non-null; non-unique; foreign-key("???"); # TODO: add foreign key connecting vocab list
-    nth_word = int; non-unique; default(0); # TODO: add default value to other columns in other database where needed
+    vocab_id = str(36); non-null; non-unique; foreign-key("vocabDB.vocab_id");
+    nth_word = int; non-unique; default(0);
     nth_appear = int; non-unique; default(0);
     edited_meaning = text; non-unique; null;
     book_marked = bool; non-unique; default(false);
@@ -37,9 +37,7 @@ class UserVocabDB(db.Model):
     uuid = db.Column(db.String(36),
                      db.ForeignKey("authDB.uuid"),
                      nullable=False)
-    vocab_id = db.Column(
-        db.String(36),
-        nullable=False)  # TODO: add foreign key connecting vocab list
+    vocab_id = db.Column(db.String(36), db.ForeignKey("vocabDB.vocab_id"))
     # for questions about default: https://www.coder.work/article/6205865
     nth_word = db.Column(db.Integer, default=0)
     nth_appear = db.Column(db.Integer, default=0)
@@ -51,8 +49,7 @@ class UserVocabDB(db.Model):
     added_mark = db.Column(db.Boolean, default=False)
 
     auth_db = db.relationship("AuthDB", back_populates="user_vocab_db")
-
-    # TODO: add foreign key connecting vocab list
+    vocab_db = db.relationship("VocabDB", back_populates="user_vocab_db")
 
     def __init__(self, id, uuid, vocab_id, nth_word, nth_appear,
                  edited_meaning, book_marked, question_mark, star_mark,

@@ -86,6 +86,9 @@ class VocabDB(db.Model):
         MutableList.as_mutable(PickleType),  # db.Text
         nullable=True)
 
+    mark_color_db = db.relationship("MarkColorDB", back_populates="vocab_db")
+    user_vocab_db = db.relationship("UserVocabDB", back_populates="vocab_db")
+
     def __init__(self, vocab_id, edition, list_ids, vocab, type,
                  main_translation, other_translation, main_sound, other_sound,
                  english_translation, confusing_word_id, mem_tips,

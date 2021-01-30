@@ -33,7 +33,7 @@ class MarkColor(graphene.ObjectType):
 class MarkColorDB(db.Model):
     """ DATABASE FORMAT
     id: int; key; auto-increment;
-    vocab_id = str(36); non-null; non-unique; foreign-key("???"); # TODO: add foreign key connecting vocab list
+    vocab_id = str(36); non-null; non-unique; foreign-key("vocabDB.vocab_id");
     uuid: str(36); non-null; non-unique; foreign-key("authDB.uuid");
     index: int; non-unique; non-null;
     color: enum; non-unique; non-null;
@@ -45,15 +45,14 @@ class MarkColorDB(db.Model):
     # Therefore, autoincrement=True should not be specified.
     # Set id field to null when adding to database.
     id = db.Column(db.Integer, primary_key=True)
-    vocab_id = db.Column(db.String(36), nullable=False)
+    vocab_id = db.Column(db.String(36), db.ForeignKey("vocabDB.vocab_id"))
     uuid = db.Column(db.String(36), db.ForeignKey("authDB.uuid"))
     index = db.Column(db.Integer, nullable=False)
     color = db.Column(db.Enum(ColorModel), nullable=False)
     time = db.Column(db.DateTime, nullable=False)
 
     auth_db = db.relationship("AuthDB", back_populates="mark_color_db")
-
-    # TODO: add foreign key connecting vocab list
+    vocab_db = db.relationship("VocabDB", back_populates="mark_color_db")
 
     def __init__(self, id, vocab_id, uuid, index, color, time):
         self.id = id
