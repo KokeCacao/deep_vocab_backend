@@ -38,7 +38,7 @@ class VocabUserVocab(Vocab, UserVocab):
             self.main_sound = vocab.main_sound
             self.other_sound = vocab.other_sound
             self.english_translation = vocab.english_translation
-            self.confusing_word_id = vocab.confusing_word_id
+            self.confusing_words = vocab.confusing_words
             self.mem_tips = vocab.mem_tips
             self.example_sentences = vocab.example_sentences
         if user_vocab is not None:

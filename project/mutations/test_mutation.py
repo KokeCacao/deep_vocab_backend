@@ -43,7 +43,7 @@ class TestMutation(graphene.Mutation):
                         main_sound="main_sound",
                         other_sound=["other_sound", "other_sound"],
                         english_translation="english_translation",
-                        confusing_word_id=["confusing_word_id"],
+                        confusing_words=["confusing_words"],
                         mem_tips="mem_tips",
                         example_sentences=["example_sentences"],
                     )

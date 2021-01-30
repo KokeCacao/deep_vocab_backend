@@ -41,7 +41,7 @@ class Vocab(graphene.ObjectType):
     other_sound = graphene.List(graphene.String)
     english_translation = graphene.String()
     # "comments" field deprecated, do fetch "comments" in other queries
-    confusing_word_id = graphene.List(graphene.String)
+    confusing_words = graphene.List(graphene.String)
     # TODO: refactor this field to "confusing_words", fetch "vocab_id" only when user click on it
     mem_tips = graphene.String()
     example_sentences = graphene.List(graphene.String)
@@ -59,7 +59,7 @@ class VocabDB(db.Model):
     main_sound: str(120); non-unique; null;
     other_sound: list(str(120)); non-unique; null;
     english_translation: text; non-unique; null;
-    confusing_word_id: list(str(36)); non-unique; null;
+    confusing_words: list(str(36)); non-unique; null;
     mem_tips: text; non-unique; null;
     example_sentences: list(text); non-unique; null; # TODO: list of text??
     """
@@ -78,7 +78,7 @@ class VocabDB(db.Model):
         MutableList.as_mutable(PickleType),  # db.String(120)
         nullable=True)
     english_translation = db.Column(db.Text, nullable=True)
-    confusing_word_id = db.Column(
+    confusing_words = db.Column(
         MutableList.as_mutable(PickleType),  # db.String(36)
         nullable=True)
     mem_tips = db.Column(db.Text, nullable=True)
@@ -91,7 +91,7 @@ class VocabDB(db.Model):
 
     def __init__(self, vocab_id, edition, list_ids, vocab, type,
                  main_translation, other_translation, main_sound, other_sound,
-                 english_translation, confusing_word_id, mem_tips,
+                 english_translation, confusing_words, mem_tips,
                  example_sentences):
         self.vocab_id = vocab_id
         self.edition = edition
@@ -103,7 +103,7 @@ class VocabDB(db.Model):
         self.main_sound = main_sound
         self.other_sound = other_sound
         self.english_translation = english_translation
-        self.confusing_word_id = confusing_word_id
+        self.confusing_words = confusing_words
         self.mem_tips = mem_tips
         self.example_sentences = example_sentences
 
@@ -119,7 +119,7 @@ class VocabDB(db.Model):
             main_sound=self.main_sound,
             other_sound=self.other_sound,
             english_translation=self.english_translation,
-            confusing_word_id=self.confusing_word_id,
+            confusing_words=self.confusing_words,
             mem_tips=self.mem_tips,
             example_sentences=self.example_sentences,
         )
@@ -127,7 +127,7 @@ class VocabDB(db.Model):
     @staticmethod
     def add(vocab_id, edition, list_ids, vocab, type, main_translation,
             other_translation, main_sound, other_sound, english_translation,
-            confusing_word_id, mem_tips, example_sentences):
+            confusing_words, mem_tips, example_sentences):
         vocab_db = VocabDB(
             vocab_id=vocab_id,
             edition=edition,
@@ -139,7 +139,7 @@ class VocabDB(db.Model):
             main_sound=main_sound,
             other_sound=other_sound,
             english_translation=english_translation,
-            confusing_word_id=confusing_word_id,
+            confusing_words=confusing_words,
             mem_tips=mem_tips,
             example_sentences=example_sentences,
         )
