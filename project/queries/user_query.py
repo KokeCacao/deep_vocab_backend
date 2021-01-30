@@ -1,6 +1,18 @@
 import graphene
 from ..utils.util import parse_kwargs
-from ..models.user_model import User, UserDB
+from ..models.user_model import UserDB
+
+
+# TODO: standarlize query like what we do on mutation
+class User(graphene.ObjectType):
+    # if resolver not specified, use default resolver
+    # see https://docs.graphene-python.org/en/latest/types/objecttypes/#defaultresolver
+    uuid = graphene.UUID()
+    display_name = graphene.String()
+    user_name = graphene.String()
+    avatar_url = graphene.String()
+    level = graphene.Int()
+    xp = graphene.Int()
 
 
 class UserQuery(object):

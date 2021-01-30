@@ -1,6 +1,7 @@
 import json
 
 from werkzeug.exceptions import InternalServerError
+from werkzeug.debug import get_current_traceback
 from . import app, schema
 from flask import Flask, Response, request, abort, render_template, current_app, send_from_directory
 from flask_graphql_auth import (
@@ -76,15 +77,24 @@ def json_dump(data,
 
 @app.route("/graphql", methods=["POST"])
 def graphql():
-    query = get_query(request)
+    try:
+        query = get_query(request)
 
-    result = schema.execute(query)
+        result = schema.execute(query)
 
-    extensions, invalid, to_dict, error_message, status = parse_result(result)
-    json_result = json_dump(result.data, extensions, error_message)
-    print("[DEBUG] result = {}".format(json_result))
+        extensions, invalid, to_dict, error_message, status = parse_result(
+            result)
+        json_result = json_dump(result.data, extensions, error_message)
+        print("[DEBUG] result = {}".format(json_result))
 
-    return Response(response=json_result, status=status, mimetype='text/json')
+        return Response(response=json_result,
+                        status=status,
+                        mimetype='text/json')
+    except:
+        get_current_traceback(skip=1,
+                              show_hidden_frames=True,
+                              ignore_system_exceptions=False).log()
+        abort(500)
 
 
 @app.route(
@@ -100,56 +110,65 @@ def secure_download(**kwargs):
     path: like string but also accepts slashes
     uuid: accepts UUID strings
     """
-    result = schema.execute("""mutation {{
-              listDownload(uuid: \"{uuid}\", accessToken: \"{access_token}\", listId: {list_id}) {{
-                  header {{
-                      name,
-                      listId,
-                      edition,
-                      vocabIds
-                  }},
-                  vocabs {{
-                      vocabId
-                      edition
-                      listIds
-                      vocab
-                      type
-                      mainTranslation
-                      otherTranslation
-                      mainSound
-                      otherSound
-                      englishTranslation
-                      confusingWordId
-                      memTips
-                      exampleSentences
-                      nthWord
-                      nthAppear
-                      editedMeaning
-                      bookMarked
-                      questionMark
-                      starMark
-                      pinMark
-                      addedMark
-                      markColors {{
-                          id
-                          vocabId
-                          uuid
-                          index
-                          color
-                          time
-                      }}
-                  }}
-              }}
-           }}""".format(uuid=kwargs["uuid"],
-                        access_token=kwargs["access_token"],
-                        list_id=kwargs["list_id"]))
+    try:
+        result = schema.execute("""mutation {{
+                listDownload(uuid: \"{uuid}\", accessToken: \"{access_token}\", listId: {list_id}) {{
+                    header {{
+                        name,
+                        listId,
+                        edition,
+                        vocabIds
+                    }},
+                    vocabs {{
+                        vocabId
+                        edition
+                        listIds
+                        vocab
+                        type
+                        mainTranslation
+                        otherTranslation
+                        mainSound
+                        otherSound
+                        englishTranslation
+                        confusingWords
+                        memTips
+                        exampleSentences
+                        nthWord
+                        nthAppear
+                        editedMeaning
+                        bookMarked
+                        questionMark
+                        starMark
+                        pinMark
+                        addedMark
+                        markColors {{
+                            id
+                            vocabId
+                            uuid
+                            index
+                            color
+                            time
+                        }}
+                    }}
+                }}
+            }}""".format(uuid=kwargs["uuid"],
+                         access_token=kwargs["access_token"],
+                         list_id=kwargs["list_id"]))
 
-    extensions, invalid, to_dict, error_message, status = parse_result(result)
-    print("listDownload = {}".format(result.data["listDownload"]))
+        extensions, invalid, to_dict, error_message, status = parse_result(
+            result)
+        print("listDownload = {}".format(result.data["listDownload"]))
 
-    # json_result = json_dump(result.data, extensions, error_message)
-    json_result = json_dump(result.data["listDownload"], None, None)
-    print("[DEBUG] result = {}".format(json_result))
+        # json_result = json_dump(result.data, extensions, error_message)
+        json_result = json_dump(result.data["listDownload"], None, None)
+        print("[DEBUG] result = {}".format(json_result))
 
-    # TODO: consider using generator, see: https://stackoverflow.com/questions/12166970/in-python-using-flask-how-can-i-write-out-an-object-for-download
-    return Response(response=json_result, status=status, mimetype='text/json')
+        # TODO: consider using generator, see: https://stackoverflow.com/questions/12166970/in-python-using-flask-how-can-i-write-out-an-object-for-download
+        return Response(response=json_result,
+                        status=status,
+                        mimetype='text/json')
+    except:
+        get_current_traceback(skip=1,
+                              show_hidden_frames=True,
+                              ignore_system_exceptions=False).log()
+        abort(500)

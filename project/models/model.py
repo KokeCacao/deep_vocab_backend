@@ -132,9 +132,6 @@ class VocabUserVocab(Vocab, UserVocab):
             self.mem_tips = vocab.mem_tips
             self.example_sentences = vocab.example_sentences
         if user_vocab is not None:
-            # id = graphene.Int()
-            # self.uuid = graphene.UUID()
-            # self.vocab_id = graphene.String()
             self.nth_word = user_vocab.nth_word
             self.nth_appear = user_vocab.nth_appear
             self.edited_meaning = user_vocab.edited_meaning

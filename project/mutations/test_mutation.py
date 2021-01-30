@@ -1,8 +1,7 @@
 import graphene
 
 from ..models.model import db
-from ..models.vocab_model import VocabDB, TypeModel, Vocab
-from ..models.mark_color_model import MarkColorDB
+from ..models.vocab_model import VocabDB, TypeModel
 
 
 class TestMutation(graphene.Mutation):

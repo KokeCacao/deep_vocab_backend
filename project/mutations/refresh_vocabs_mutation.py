@@ -2,8 +2,9 @@ import graphene
 
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
 from ..models.mark_color_model import ColorModel, MarkColorDB
-from ..models.vocab_model import VocabDB, Vocab
+from ..models.vocab_model import VocabDB
 from ..models.mark_color_model import MarkColorDB
+from ..models.model import Vocab
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -30,7 +31,7 @@ class RefreshVocabMutation(graphene.Mutation):
                 mainSound
                 otherSound
                 englishTranslation
-                confusingWordId
+                confusingWords
                 memTips
                 exampleSentences
                       nthWord
