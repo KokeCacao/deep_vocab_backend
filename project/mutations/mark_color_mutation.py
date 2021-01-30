@@ -85,13 +85,14 @@ class MarkColorMutation(graphene.Mutation):
                 raise Exception(
                     "400|[Warning] index-1 does not exist in database")
 
-            # if index already exist in database, return such entry
+            # if index already exist in database, edit such entry, return such entry
             mark_color_db = MarkColorDB.get_by_uuid_vocab_id_index(
                 auth_db.uuid, kwargs["vocab_id"], index)
             if mark_color_db != None:
-                MarkColorDB.update(mark_color_db,
-                                   color=kwargs["color"],
-                                   time=kwargs["time"])
+                mark_color_db = MarkColorDB.update(mark_color_db,
+                                                   color=kwargs["color"],
+                                                   time=kwargs["time"])
+                db.session.commit()
                 return mark_color_db.to_graphql_object()
 
             # else create new entry
