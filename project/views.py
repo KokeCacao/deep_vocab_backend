@@ -151,33 +151,5 @@ def secure_download(**kwargs):
     json_result = json_dump(result.data["listDownload"], None, None)
     print("[DEBUG] result = {}".format(json_result))
 
+    # TODO: consider using generator, see: https://stackoverflow.com/questions/12166970/in-python-using-flask-how-can-i-write-out-an-object-for-download
     return Response(response=json_result, status=status, mimetype='text/json')
-
-
-# @app.route("/download/<path:filename>", methods=["GET"])
-# def download(**kwargs):
-#     # print("Sending file: {}".format(
-#     #     os.path.join(current_app.root_path, app.config['DOWNLOAD_FOLDER'],
-#     #                  filename)))
-#     # return send_from_directory(directory=os.path.join(
-#     #     current_app.root_path, app.config['DOWNLOAD_FOLDER']),
-#     #                            filename=filename,
-#     #                            as_attachment=False)
-#     def generator(list_id):
-#         list_header = {
-#             0: {"vocab_id", "0"},
-#             1: {"1"},
-#         }
-#         for vocab_id in list_header.get(list_id, {}):
-#             print(dir(VocabDB.get(vocab_id)))
-#             print(VocabDB.get(vocab_id).to_json())
-#             yield VocabDB.get(vocab_id).to_graphql_object().vocab_id
-
-#     # see: https://stackoverflow.com/questions/12166970/in-python-using-flask-how-can-i-write-out-an-object-for-download
-#     return Response(response=generator(0),
-#                     mimetype="text/plain",
-#                     headers={
-#                         "Content-Disposition":
-#                         "attachment;filename={filename}".format(
-#                             filename=kwargs["filename"])
-#                     })

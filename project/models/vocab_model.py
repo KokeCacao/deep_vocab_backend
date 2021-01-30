@@ -1,49 +1,8 @@
-import graphene
-import enum
 from sqlalchemy.sql.expression import or_
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy import PickleType
 
-from .model import db
-
-
-class TypeModel(enum.Enum):
-    # See: https://en.wikipedia.org/wiki/Part_of_speech
-    # noun
-    # pronoun
-    # verb
-    # adjective
-    # adverb
-    # preposition
-    # conjunction
-    # interjection
-    # article or (more recently) determiner
-    n = "n"
-    pron = "pron"
-    v = "v"
-    adj = "adj"
-    adv = "adv"
-    prep = "prep"
-    conj = "conj"
-    interj = "interj"
-    art = "art"
-
-
-class Vocab(graphene.ObjectType):
-    vocab_id = graphene.String()
-    edition = graphene.DateTime()
-    list_ids = graphene.List(graphene.Int)
-    vocab = graphene.String()
-    type = graphene.Enum.from_enum(TypeModel)()
-    main_translation = graphene.String()
-    other_translation = graphene.List(graphene.String)
-    main_sound = graphene.String()
-    other_sound = graphene.List(graphene.String)
-    english_translation = graphene.String()
-    # "comments" field deprecated, do fetch "comments" in other queries
-    confusing_words = graphene.List(graphene.String)
-    mem_tips = graphene.String()
-    example_sentences = graphene.List(graphene.String)
+from .model import db, TypeModel
 
 
 class VocabDB(db.Model):
@@ -100,23 +59,6 @@ class VocabDB(db.Model):
         self.confusing_words = confusing_words
         self.mem_tips = mem_tips
         self.example_sentences = example_sentences
-
-    def to_graphql_object(self):
-        return Vocab(
-            vocab_id=self.vocab_id,
-            edition=self.edition,
-            list_ids=self.list_ids,
-            vocab=self.vocab,
-            type=self.type,
-            main_translation=self.main_translation,
-            other_translation=self.other_translation,
-            main_sound=self.main_sound,
-            other_sound=self.other_sound,
-            english_translation=self.english_translation,
-            confusing_words=self.confusing_words,
-            mem_tips=self.mem_tips,
-            example_sentences=self.example_sentences,
-        )
 
     @staticmethod
     def add(vocab_id, edition, list_ids, vocab, type, main_translation,

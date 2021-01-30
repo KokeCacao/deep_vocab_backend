@@ -46,15 +46,6 @@ class AuthDB(db.Model):
         self.refresh_token = refresh_token
         self.wx_token = wx_token
 
-    def to_graphql_object(self):
-        return Auth(uuid=self.uuid,
-                    email=self.email,
-                    user_name=self.user_name,
-                    password=self.password,
-                    access_token=self.access_token,
-                    refresh_token=self.refresh_token,
-                    wx_token=self.wx_token)
-
     @staticmethod
     def add(uuid, user_name, password, email, access_token, refresh_token,
             wx_token):

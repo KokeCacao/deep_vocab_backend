@@ -1,18 +1,5 @@
-import graphene
-
 from werkzeug.exceptions import InternalServerError
 from .model import db
-
-
-class User(graphene.ObjectType):
-    # if resolver not specified, use default resolver
-    # see https://docs.graphene-python.org/en/latest/types/objecttypes/#defaultresolver
-    uuid = graphene.UUID()
-    display_name = graphene.String()
-    user_name = graphene.String()
-    avatar_url = graphene.String()
-    level = graphene.Int()
-    xp = graphene.Int()
 
 
 class UserDB(db.Model):
@@ -48,14 +35,6 @@ class UserDB(db.Model):
         self.avatar_url = avatar_url
         self.level = level
         self.xp = xp
-
-    def to_graphql_object(self):
-        return User(uuid=self.uuid,
-                    display_name=self.display_name,
-                    user_name=self.user_name,
-                    avatar_url=self.avatar_url,
-                    level=self.level,
-                    xp=self.xp)
 
     @staticmethod
     def add(uuid, user_name, display_name, avatar_url, level, xp):

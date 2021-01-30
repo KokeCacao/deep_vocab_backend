@@ -33,7 +33,22 @@ class RefreshVocabMutation(graphene.Mutation):
                 confusingWordId
                 memTips
                 exampleSentences
-                # TODO: implement userVocab
+                      nthWord
+                      nthAppear
+                      editedMeaning
+                      bookMarked
+                      questionMark
+                      starMark
+                      pinMark
+                      addedMark
+                      markColors {
+                          id
+                          vocabId
+                          uuid
+                          index
+                          color
+                          time
+                      }
             }
         }
     }
@@ -56,8 +71,6 @@ class RefreshVocabMutation(graphene.Mutation):
     def mutate(parent, info, **kwargs):
         kwargs = parse_kwargs(kwargs)
         auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
-
-        # TODO: set kwargs["uuid"] before using it if "uuid" not in kwargs, do the same for other mutations
 
         # mark_color_dict = {vocab_id: [MarkColor]}
         mark_color_dict = MarkColorDB.get_by_uuid_to_vocab_id_dict(uuid,

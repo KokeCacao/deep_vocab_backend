@@ -94,4 +94,14 @@ class UserVocabMutation(graphene.Mutation):
                                                **filtered_kwargs)
 
         db.session.commit()
-        return user_vocab_db.to_graphql_object()
+        return UserVocabMutation(
+            vocab_id=user_vocab_db.vocab_id,
+            nth_word=user_vocab_db.nth_word,
+            nth_appear=user_vocab_db.nth_appear,
+            edited_meaning=user_vocab_db.edited_meaning,
+            book_marked=user_vocab_db.book_marked,
+            question_mark=user_vocab_db.question_mark,
+            star_mark=user_vocab_db.star_mark,
+            pin_mark=user_vocab_db.pin_mark,
+            added_mark=user_vocab_db.added_mark,
+        )

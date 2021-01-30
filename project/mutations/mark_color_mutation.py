@@ -1,8 +1,8 @@
 import graphene
 
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
-from ..models.model import db
-from ..models.mark_color_model import ColorModel, MarkColorDB
+from ..models.model import db, ColorModel
+from ..models.mark_color_model import MarkColorDB
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -65,7 +65,12 @@ class MarkColorMutation(graphene.Mutation):
                                                color=kwargs["color"],
                                                time=kwargs["time"])
             db.session.commit()
-            return mark_color_db.to_graphql_object()
+            return MarkColorMutation(
+                vocab_id=mark_color_db.vocab_id,
+                index=mark_color_db.index,
+                color=mark_color_db.color,
+                time=mark_color_db.time,
+            )
 
         # else create new entry
         mark_color_db = MarkColorDB.add(uuid=uuid,
@@ -75,4 +80,9 @@ class MarkColorMutation(graphene.Mutation):
                                         time=kwargs["time"])
 
         db.session.commit()
-        return mark_color_db.to_graphql_object()
+        return MarkColorMutation(
+            vocab_id=mark_color_db.vocab_id,
+            index=mark_color_db.index,
+            color=mark_color_db.color,
+            time=mark_color_db.time,
+        )

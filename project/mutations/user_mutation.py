@@ -61,4 +61,9 @@ class UserMutation(graphene.Mutation):
         )
 
         db.session.commit()
-        return user_db.to_graphql_object()
+        return UserMutation(
+            uuid=user_db.uuid,
+            access_token=user_db.access_token,
+            display_name=user_db.display_name,
+            avatar_url=user_db.display_name,
+        )

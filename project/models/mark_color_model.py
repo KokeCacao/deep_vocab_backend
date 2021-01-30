@@ -1,34 +1,5 @@
-import graphene
-import enum
-
 from werkzeug.exceptions import InternalServerError
-from .model import db
-
-
-class ColorModel(enum.Enum):
-    black = "black"
-    red = "red"
-    yellow = "yellow"
-    green = "green"
-
-
-class MarkColor(graphene.ObjectType):
-    # if resolver not specified, use default resolver
-    # see https://docs.graphene-python.org/en/latest/types/objecttypes/#defaultresolver
-    id = graphene.Int()
-    vocab_id = graphene.String()
-    uuid = graphene.UUID()
-    index = graphene.Int()
-    # See: https://docs.graphene-python.org/en/latest/types/enums/, example: https://github.com/graphql-python/graphene/issues/273
-
-    # graphene.Enum.from_enum(ColorModel) can't be used twice without storing the value
-    # See: https://github.com/graphql-python/graphene-sqlalchemy/issues/211
-    from functools import lru_cache
-    graphene.Enum.from_enum = lru_cache(maxsize=None)(graphene.Enum.from_enum)
-    color = graphene.Enum.from_enum(ColorModel)()
-
-    # See: https://docs.graphene-python.org/en/latest/types/scalars/
-    time = graphene.DateTime()
+from .model import db, ColorModel
 
 
 class MarkColorDB(db.Model):
@@ -62,14 +33,6 @@ class MarkColorDB(db.Model):
         self.index = index
         self.color = color
         self.time = time
-
-    def to_graphql_object(self):
-        return MarkColor(id=self.id,
-                         vocab_id=self.vocab_id,
-                         uuid=self.uuid,
-                         index=self.index,
-                         color=self.color,
-                         time=self.time)
 
     @staticmethod
     def add(vocab_id, uuid, index, color, time):

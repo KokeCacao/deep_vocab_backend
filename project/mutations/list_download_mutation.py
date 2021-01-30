@@ -2,56 +2,14 @@ import graphene
 
 from datetime import datetime
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
-from ..models.user_vocab_model import UserVocabDB, UserVocab
-from ..models.vocab_model import VocabDB, Vocab
-from ..models.mark_color_model import MarkColor, MarkColorDB
+from ..models.user_vocab_model import UserVocabDB
+from ..models.vocab_model import VocabDB
+from ..models.mark_color_model import MarkColorDB
+from ..models.model import VocabListHeader, VocabUserVocab
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
 )
-
-
-# TODO: refector models into some where else
-class VocabListHeader(graphene.ObjectType):
-    name = graphene.String()
-    list_id = graphene.Int()
-    edition = graphene.DateTime()
-    vocab_ids = graphene.List(graphene.String)
-
-
-class VocabUserVocab(Vocab, UserVocab):
-    mark_colors = graphene.List(MarkColor)  # TODO: add to UserVocab
-
-    def from_vocab_and_user_vocab(self, vocab, user_vocab, mark_colors_list):
-        if vocab is not None:
-            self.vocab_id = vocab.vocab_id
-            self.edition = vocab.edition
-            self.list_ids = vocab.list_ids
-            self.vocab = vocab.vocab
-            self.type = vocab.type
-            self.main_translation = vocab.main_translation
-            self.other_translation = vocab.other_translation
-            self.main_sound = vocab.main_sound
-            self.other_sound = vocab.other_sound
-            self.english_translation = vocab.english_translation
-            self.confusing_words = vocab.confusing_words
-            self.mem_tips = vocab.mem_tips
-            self.example_sentences = vocab.example_sentences
-        if user_vocab is not None:
-            # id = graphene.Int()
-            # self.uuid = graphene.UUID()
-            # self.vocab_id = graphene.String()
-            self.nth_word = user_vocab.nth_word
-            self.nth_appear = user_vocab.nth_appear
-            self.edited_meaning = user_vocab.edited_meaning
-            self.book_marked = user_vocab.book_marked
-            self.question_mark = user_vocab.question_mark
-            self.star_mark = user_vocab.star_mark
-            self.pin_mark = user_vocab.pin_mark
-            self.added_mark = user_vocab.added_mark
-        if mark_colors_list is not None and mark_colors_list != []:
-            self.mark_colors = mark_colors_list
-        return self
 
 
 class ListDownloadMutation(graphene.Mutation):

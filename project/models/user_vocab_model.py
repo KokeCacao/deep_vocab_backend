@@ -1,22 +1,6 @@
-import graphene
-
 from sqlalchemy.sql.expression import or_
 from werkzeug.exceptions import InternalServerError
 from .model import db
-
-
-class UserVocab(graphene.ObjectType):
-    id = graphene.Int()
-    uuid = graphene.UUID()
-    vocab_id = graphene.String()
-    nth_word = graphene.Int()
-    nth_appear = graphene.Int()
-    edited_meaning = graphene.String()
-    book_marked = graphene.Boolean()
-    question_mark = graphene.Boolean()
-    star_mark = graphene.Boolean()
-    pin_mark = graphene.Boolean()
-    added_mark = graphene.Boolean()
 
 
 class UserVocabDB(db.Model):
@@ -66,21 +50,6 @@ class UserVocabDB(db.Model):
         self.star_mark = star_mark
         self.pin_mark = pin_mark
         self.added_mark = added_mark
-
-    def to_graphql_object(self):
-        return UserVocab(
-            id=self.id,
-            uuid=self.uuid,
-            vocab_id=self.vocab_id,
-            nth_word=self.nth_word,
-            nth_appear=self.nth_appear,
-            edited_meaning=self.edited_meaning,
-            book_marked=self.book_marked,
-            question_mark=self.question_mark,
-            star_mark=self.star_mark,
-            pin_mark=self.pin_mark,
-            added_mark=self.added_mark,
-        )
 
     @staticmethod
     def add(uuid, vocab_id, nth_word, nth_appear, edited_meaning, book_marked,
