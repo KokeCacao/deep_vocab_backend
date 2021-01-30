@@ -33,18 +33,17 @@ def parse_result(result):
     invalid = result.invalid
     to_dict = result.to_dict()
 
-    print("[DEBUG] errors = {}".format(errors))  # TODO: test when no error
-
     try:
         status = 200 if errors is None else int(
             errors[0].message.split("|")[0])
     except:
         raise InternalServerError(
-            "Cannot parse error to string. This is not a client error.")
+            "Cannot parse error to string. That means this is not a client error."
+        )
     error_message = None if status == 200 else errors[0].message.split("|")[1]
-
-    print("[DEBUG] error code = {}, message = {}".format(
-        status, error_message))
+    if error_message != None:
+        print("[DEBUG] error = {}, error code = {}, message = {}".format(
+            errors, status, error_message))
 
     if result.data is None:
         error_message = "Invalid request"

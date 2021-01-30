@@ -1,4 +1,5 @@
 import graphene
+from werkzeug.exceptions import InternalServerError
 from .model import db
 
 
@@ -87,7 +88,11 @@ class AuthDB(db.Model):
     @staticmethod
     def update(user_db, **kwargs):
         assert (user_db is not None)
-        if 'user_name' in kwargs: user_db.user_name = kwargs['user_name']
+        if 'uuid' in kwargs:
+            raise InternalServerError("[AuthModel] uuid can't be changed.")
+        if 'user_name' in kwargs:
+            raise InternalServerError(
+                "[AuthModel] user_name can't be changed.")
         if 'password' in kwargs: user_db.password = kwargs['password']
         if 'email' in kwargs: user_db.email = kwargs['email']
         if 'access_token' in kwargs:

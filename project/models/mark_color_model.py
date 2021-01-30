@@ -1,6 +1,7 @@
 import graphene
 import enum
 
+from werkzeug.exceptions import InternalServerError
 from .model import db
 
 
@@ -119,13 +120,17 @@ class MarkColorDB(db.Model):
     @staticmethod
     def update(mark_color_db, **kwargs):
         assert (mark_color_db is not None)
-        if 'id' in kwargs: raise Exception("400|[Warning] id can't be changed")
+        if 'id' in kwargs:
+            raise InternalServerError("[MarkColorModel] id can't be changed.")
         if 'vocab_id' in kwargs:
-            raise Exception("400|[Warning] vocab_id can't be changed")
+            raise InternalServerError(
+                "[MarkColorModel] vocab_id can't be changed.")
         if 'uuid' in kwargs:
-            raise Exception("400|[Warning] uuid can't be changed")
+            raise InternalServerError(
+                "[MarkColorModel] uuid can't be changed.")
         if 'index' in kwargs:
-            raise Exception("400|[Warning] index can't be changed")
+            raise InternalServerError(
+                "[MarkColorModel] index can't be changed.")
         if 'color' in kwargs: mark_color_db.color = kwargs['color']
         if 'time' in kwargs: mark_color_db.time = kwargs['time']
         return mark_color_db

@@ -159,4 +159,5 @@ class VocabDB(db.Model):
 
     @staticmethod
     def update(user_vocab_db, **kwargs):
-        raise NotImplementedError("400|Update Vocab Model Not Supported")
+        # TODO
+        raise NotImplementedError("Update Vocab Model Not Supported.")

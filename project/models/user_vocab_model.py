@@ -1,6 +1,7 @@
 import graphene
-from sqlalchemy.sql.expression import or_
 
+from sqlalchemy.sql.expression import or_
+from werkzeug.exceptions import InternalServerError
 from .model import db
 
 
@@ -116,17 +117,21 @@ class UserVocabDB(db.Model):
         assert (q.count() <= 1)
         return q.first()
 
-    # TODO: turn all Exception here into InternalServerError, and check other model and calls to update functions
     @staticmethod
     def update(user_vocab_db, **kwargs):
         assert (user_vocab_db is not None)
-        if 'id' in kwargs: raise Exception("400|[Warning] id can't be changed")
-        if 'vocab_id' in kwargs:
-            raise Exception("400|[Warning] vocab_id can't be changed")
+        if 'id' in kwargs:
+            raise InternalServerError("[UserVocabModel] id can't be changed.")
         if 'uuid' in kwargs:
-            raise Exception("400|[Warning] uuid can't be changed")
+            raise InternalServerError(
+                "[UserVocabModel] uuid can't be changed.")
+        if 'vocab_id' in kwargs:
+            raise InternalServerError(
+                "[UserVocabModel] vocab_id can't be changed.")
+        # TODO: make use of these two fields
         if 'nth_word' in kwargs:
-            raise Exception("400|[Warning] uuid can't be changed")
+            user_vocab_db.nth_word = kwargs['nth_word']
+        # TODO: make use of these two fields
         if 'nth_appear' in kwargs:
             user_vocab_db.nth_appear = kwargs['nth_appear']
         if 'edited_meaning' in kwargs:

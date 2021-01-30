@@ -1,4 +1,6 @@
 import graphene
+
+from werkzeug.exceptions import InternalServerError
 from .model import db
 
 
@@ -77,16 +79,11 @@ class UserDB(db.Model):
 
     @staticmethod
     def update(user_db, **kwargs):
-        """ UPDATE
-        user_db: UserDB.get(kwargs['uuid'])
-        **kwargs: passed by query arguments
-
-        1. when updating, we only change what you passed to us
-        therefore, if you want to set it to empty, you can use None
-        2. you can update everything if it is not a key
-        """
-        assert (user_db is not None)
-        if 'user_name' in kwargs: user_db.user_name = kwargs['user_name']
+        if 'uuid' in kwargs:
+            raise InternalServerError("[UserModel] uuid can't be changed.")
+        if 'user_name' in kwargs:
+            raise InternalServerError(
+                "[UserModel] user_name can't be changed.")
         if 'display_name' in kwargs:
             user_db.display_name = kwargs['display_name']
         if 'avatar_url' in kwargs: user_db.avatar_url = kwargs['avatar_url']
