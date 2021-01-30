@@ -98,7 +98,7 @@ class MarkColorDB(db.Model):
             MarkColorDB.vocab_id == vocab_id).all()
 
     @staticmethod
-    def get_by_uuid_sort_to_vocab_id_dict(uuid, sorted=False):
+    def get_by_uuid_to_vocab_id_dict(uuid, sorted=False):
         mark_color_dbs = MarkColorDB.get_by_uuid(uuid, sorted=sorted)
 
         # vocab_dict = {vocab_id: [MarkColor]}

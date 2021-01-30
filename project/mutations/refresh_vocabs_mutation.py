@@ -88,7 +88,7 @@ class RefreshVocabMutation(graphene.Mutation):
             # TODO: set kwargs["uuid"] before using it if "uuid" not in kwargs, do the same for other mutations
 
             # mark_color_dict = {vocab_id: [MarkColor]}
-            mark_color_dict = MarkColorDB.get_by_uuid_sort_to_vocab_id_dict(
+            mark_color_dict = MarkColorDB.get_by_uuid_to_vocab_id_dict(
                 kwargs["uuid"], sorted=True)
 
             # selected = [vocab_id that has last mark == MarkColor.black]

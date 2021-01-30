@@ -42,7 +42,6 @@ class Vocab(graphene.ObjectType):
     english_translation = graphene.String()
     # "comments" field deprecated, do fetch "comments" in other queries
     confusing_words = graphene.List(graphene.String)
-    # TODO: refactor this field to "confusing_words", fetch "vocab_id" only when user click on it
     mem_tips = graphene.String()
     example_sentences = graphene.List(graphene.String)
 
@@ -61,7 +60,7 @@ class VocabDB(db.Model):
     english_translation: text; non-unique; null;
     confusing_words: list(str(36)); non-unique; null;
     mem_tips: text; non-unique; null;
-    example_sentences: list(text); non-unique; null; # TODO: list of text??
+    example_sentences: list(text); non-unique; null;
     """
     __tablename__ = 'vocabDB'
     vocab_id = db.Column(db.String(36), primary_key=True, nullable=False)
@@ -70,21 +69,16 @@ class VocabDB(db.Model):
     vocab = db.Column(db.String(120), nullable=False)
     type = db.Column(db.Enum(TypeModel), nullable=True)
     main_translation = db.Column(db.Text, nullable=True)
-    other_translation = db.Column(
-        MutableList.as_mutable(PickleType),  # db.String(120)
-        nullable=True)
+    other_translation = db.Column(MutableList.as_mutable(PickleType),
+                                  nullable=True)
     main_sound = db.Column(db.String(120), nullable=False)
-    other_sound = db.Column(
-        MutableList.as_mutable(PickleType),  # db.String(120)
-        nullable=True)
+    other_sound = db.Column(MutableList.as_mutable(PickleType), nullable=True)
     english_translation = db.Column(db.Text, nullable=True)
-    confusing_words = db.Column(
-        MutableList.as_mutable(PickleType),  # db.String(36)
-        nullable=True)
+    confusing_words = db.Column(MutableList.as_mutable(PickleType),
+                                nullable=True)
     mem_tips = db.Column(db.Text, nullable=True)
-    example_sentences = db.Column(
-        MutableList.as_mutable(PickleType),  # db.Text
-        nullable=True)
+    example_sentences = db.Column(MutableList.as_mutable(PickleType),
+                                  nullable=True)
 
     mark_color_db = db.relationship("MarkColorDB", back_populates="vocab_db")
     user_vocab_db = db.relationship("UserVocabDB", back_populates="vocab_db")

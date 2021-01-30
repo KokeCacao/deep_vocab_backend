@@ -117,7 +117,6 @@ class ListDownloadMutation(graphene.Mutation):
             header_data = list_header.get(kwargs["list_id"])
 
             # get vocab data
-            # TODO: change all sort to order by: https://blog.csdn.net/aimill/article/details/80812817
             vocab_dbs = VocabDB.gets(header_data.get("vocab_ids", {}),
                                      sorted=True)
             vocab_ids = [vocab_db.vocab_id for vocab_db in vocab_dbs]
@@ -127,7 +126,7 @@ class ListDownloadMutation(graphene.Mutation):
                 kwargs["uuid"], vocab_id) for vocab_id in vocab_ids)
 
             # get mark_colo_dict as dictionary of vocab_id and markcolor list
-            mark_color_dict = MarkColorDB.get_by_uuid_sort_to_vocab_id_dict(
+            mark_color_dict = MarkColorDB.get_by_uuid_to_vocab_id_dict(
                 kwargs["uuid"])
             mark_colorses = (mark_color_dict.get(vocab_id, [])
                              for vocab_id in vocab_ids)
