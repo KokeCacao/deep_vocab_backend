@@ -84,12 +84,12 @@ class UserVocabDB(db.Model):
     def get_by_uuid_vocab_id(uuid, vocab_id):
         q = UserVocabDB.query.filter(UserVocabDB.uuid == uuid).filter(
             UserVocabDB.vocab_id == vocab_id)
-        assert (q.count() <= 1)
+        assert q.count() <= 1
         return q.first()
 
     @staticmethod
     def update(user_vocab_db, **kwargs):
-        assert (user_vocab_db is not None)
+        assert user_vocab_db is not None
         if 'id' in kwargs:
             raise InternalServerError("[UserVocabModel] id can't be changed.")
         if 'uuid' in kwargs:

@@ -49,7 +49,7 @@ class AuthDB(db.Model):
     @staticmethod
     def add(uuid, user_name, password, email, access_token, refresh_token,
             wx_token):
-        assert (AuthDB.get(uuid) is None)
+        assert AuthDB.get(uuid) is None
         auth_db = AuthDB(uuid=uuid,
                          user_name=user_name,
                          password=password,
@@ -67,18 +67,18 @@ class AuthDB(db.Model):
     @staticmethod
     def get_by_user_name(user_name):
         q = AuthDB.query.filter(AuthDB.user_name == user_name)
-        assert (q.count() <= 1)
+        assert q.count() <= 1
         return q.first()
 
     @staticmethod
     def get_by_email(email):
         q = AuthDB.query.filter(AuthDB.email == email)
-        assert (q.count() <= 1)
+        assert q.count() <= 1
         return q.first()
 
     @staticmethod
     def update(user_db, **kwargs):
-        assert (user_db is not None)
+        assert user_db is not None
         if 'uuid' in kwargs:
             raise InternalServerError("[AuthModel] uuid can't be changed.")
         if 'user_name' in kwargs:

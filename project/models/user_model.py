@@ -38,7 +38,7 @@ class UserDB(db.Model):
 
     @staticmethod
     def add(uuid, user_name, display_name, avatar_url, level, xp):
-        assert (UserDB.get(uuid) is None)
+        assert UserDB.get(uuid) is None
         user_db = UserDB(uuid=uuid,
                          user_name=user_name,
                          display_name=display_name,

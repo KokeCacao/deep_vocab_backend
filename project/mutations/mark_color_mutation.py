@@ -81,9 +81,14 @@ class MarkColorMutation(graphene.Mutation):
                                         time=kwargs["time"])
         # add nth_word when needed
         if index == 0:
-            user_vocab_db = UserVocabDB.gets(kwargs["vocab_id"])
-            UserVocabDB.update(user_vocab_db,
-                               nth_word=user_vocab_db.nth_word + 1)
+            user_vocab_db = UserVocabDB.get(kwargs["vocab_id"])
+            if user_vocab_db is None:
+                UserVocabDB.add(uuid=uuid,
+                                vocab_id=kwargs["vocab_id"],
+                                nth_word=1)
+            else:
+                UserVocabDB.update(user_vocab_db,
+                                   nth_word=user_vocab_db.nth_word + 1)
 
         db.session.commit()
         return MarkColorMutation(

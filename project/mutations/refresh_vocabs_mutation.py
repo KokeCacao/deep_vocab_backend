@@ -86,6 +86,7 @@ class RefreshVocabMutation(graphene.Mutation):
 
         # add nth_appear
         for user_vocab_db in UserVocabDB.gets(selected_vocab_id):
+            assert user_vocab_db != None
             UserVocabDB.update(user_vocab_db,
                                nth_appear=user_vocab_db.nth_appear + 1)
 
