@@ -30,7 +30,7 @@ class VocabDB(db.Model):
     main_translation = db.Column(db.Text, nullable=True)
     other_translation = db.Column(MutableList.as_mutable(PickleType),
                                   nullable=True)
-    main_sound = db.Column(db.String(120), nullable=False)
+    main_sound = db.Column(db.String(120), nullable=True)
     other_sound = db.Column(MutableList.as_mutable(PickleType), nullable=True)
     english_translation = db.Column(db.Text, nullable=True)
     confusing_words = db.Column(MutableList.as_mutable(PickleType),
@@ -61,9 +61,19 @@ class VocabDB(db.Model):
         self.example_sentences = example_sentences
 
     @staticmethod
-    def add(vocab_id, edition, list_ids, vocab, type, main_translation,
-            other_translation, main_sound, other_sound, english_translation,
-            confusing_words, mem_tips, example_sentences):
+    def add(vocab_id,
+            edition,
+            list_ids,
+            vocab,
+            type=None,
+            main_translation=None,
+            other_translation=None,
+            main_sound=None,
+            other_sound=None,
+            english_translation=None,
+            confusing_words=None,
+            mem_tips=None,
+            example_sentences=None):
         vocab_db = VocabDB(
             vocab_id=vocab_id,
             edition=edition,

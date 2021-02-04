@@ -47,8 +47,13 @@ class AuthDB(db.Model):
         self.wx_token = wx_token
 
     @staticmethod
-    def add(uuid, user_name, password, email, access_token, refresh_token,
-            wx_token):
+    def add(uuid,
+            user_name,
+            password,
+            email,
+            access_token=None,
+            refresh_token=None,
+            wx_token=None):
         assert AuthDB.get(uuid) is None
         auth_db = AuthDB(uuid=uuid,
                          user_name=user_name,

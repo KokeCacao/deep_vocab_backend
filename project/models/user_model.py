@@ -5,8 +5,8 @@ from .model import db
 class UserDB(db.Model):
     """ DATABASE FORMAT
     uuid: str(36); key; non-null; foreign-key("authDB.uuid");
+    user_name: str(80); unique; non-null;
     display_name: str(120); null;
-    user_name: str(80); unique; null;
     avatar_url: str(120); non-unique; null; # TODO: maybe increase the length to allow longer? or do internal storage
     level: int; non-unique; default(0);
     xp: int; non-unique; default(0);
@@ -15,8 +15,8 @@ class UserDB(db.Model):
     uuid = db.Column(db.String(36),
                      db.ForeignKey("authDB.uuid"),
                      primary_key=True)
+    user_name = db.Column(db.String(80), unique=True, nullable=False)
     display_name = db.Column(db.String(120), nullable=True)
-    user_name = db.Column(db.String(80), unique=True, nullable=True)
     avatar_url = db.Column(db.String(120), nullable=True)
     level = db.Column(db.Integer, default=0)
     xp = db.Column(db.Integer, default=0)
@@ -37,7 +37,12 @@ class UserDB(db.Model):
         self.xp = xp
 
     @staticmethod
-    def add(uuid, user_name, display_name, avatar_url, level, xp):
+    def add(uuid,
+            user_name,
+            display_name=None,
+            avatar_url=None,
+            level=None,
+            xp=None):
         assert UserDB.get(uuid) is None
         user_db = UserDB(uuid=uuid,
                          user_name=user_name,

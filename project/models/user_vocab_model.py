@@ -52,8 +52,16 @@ class UserVocabDB(db.Model):
         self.added_mark = added_mark
 
     @staticmethod
-    def add(uuid, vocab_id, nth_word, nth_appear, edited_meaning, book_marked,
-            question_mark, star_mark, pin_mark, added_mark):
+    def add(uuid,
+            vocab_id,
+            nth_word=None,
+            nth_appear=None,
+            edited_meaning=None,
+            book_marked=None,
+            question_mark=None,
+            star_mark=None,
+            pin_mark=None,
+            added_mark=None):
         user_vocab_db = UserVocabDB(
             id=None,
             uuid=uuid,

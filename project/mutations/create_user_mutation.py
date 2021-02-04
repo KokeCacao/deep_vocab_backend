@@ -44,19 +44,16 @@ class CreateUserMutation(graphene.Mutation):
 
         uuid = str(UUID.uuid4())
         try:
-            AuthDB.add(uuid=uuid,
-                       email=kwargs["email"],
-                       user_name=kwargs["user_name"],
-                       password=kwargs["password"],
-                       access_token=None,
-                       refresh_token=None,
-                       wx_token=None)
-            UserDB.add(uuid=uuid,
-                       user_name=kwargs["user_name"],
-                       display_name=None,
-                       avatar_url=None,
-                       level=0,
-                       xp=0)
+            AuthDB.add(
+                uuid=uuid,
+                email=kwargs["email"],
+                user_name=kwargs["user_name"],
+                password=kwargs["password"],
+            )
+            UserDB.add(
+                uuid=uuid,
+                user_name=kwargs["user_name"],
+            )
             db.session.commit()
         except:
             raise Exception("400|[Warning] user_name or email already exists.")
