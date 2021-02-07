@@ -18,7 +18,7 @@ def parse_kwargs(kwargs):
 
 def check_jwt_with_uuid(kwargs, jwt_identity):
     assert "uuid" in kwargs
-    if "jwt_error" in kwargs: raise Exception("400|[Warning] JWT incorrect.")
+    if "jwt_error" in kwargs: raise Exception("401|[Warning] JWT incorrect.")
     if jwt_identity != kwargs["uuid"]:
         raise Exception("400|[Warning] incorrect uuid.")
 

@@ -1,7 +1,7 @@
 import graphene
 
 from ..models.model import db
-from ..models.vocab_model import VocabDB, TypeModel
+from ..algorithm.vocab_database_creator import BarronDatabaseCreator
 
 
 class TestMutation(graphene.Mutation):
@@ -26,27 +26,8 @@ class TestMutation(graphene.Mutation):
         if key != "Koke_Cacao 's secret key":
             raise Exception("400|Invalid Key")
         if action == "add to db":
-            from datetime import datetime
-            for vocab_int in range(1, 100):
-                vocab_id = str(vocab_int)
-                vocab_db = vocab_db = VocabDB.get(vocab_id)
-                if vocab_db == None:
-                    vocab_db = VocabDB.add(
-                        vocab_id=vocab_id,
-                        edition=datetime.now(),
-                        list_ids=[0, 1],
-                        vocab="vocab" + vocab_id,
-                        type=TypeModel.adj,
-                        main_translation="main_translation",
-                        other_translation=["other_translation"],
-                        main_sound="main_sound",
-                        other_sound=["other_sound", "other_sound"],
-                        english_translation="english_translation",
-                        confusing_words=["confusing_words"],
-                        mem_tips="mem_tips",
-                        example_sentences=["example_sentences"],
-                    )
-                else:
-                    raise Exception("400|Already Added")
+            BarronDatabaseCreator().add_barron_to_database()
             db.session.commit()
+        elif action == "delete db":
+            pass
         return TestMutation(success=True)

@@ -6,6 +6,7 @@ from ..models.user_vocab_model import UserVocabDB
 from ..models.vocab_model import VocabDB
 from ..models.mark_color_model import MarkColorDB
 from ..models.model import VocabListHeader, VocabUserVocab
+from ..algorithm.vocab_database_creator import BarronDatabaseCreator
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -39,23 +40,28 @@ class ListDownloadMutation(graphene.Mutation):
         kwargs = parse_kwargs(kwargs)
         auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
 
-        list_header = {
-            0: {
-                "name": "list_name",
-                "list_id": 0,
-                "edition":
-                datetime.fromisoformat("2021-01-23T02:26:15.196899"),
-                "vocab_ids":
-                set(str(vocab_int) for vocab_int in range(1, 100))
-            },
-            1: {
-                "name": "list_name",
-                "list_id": 1,
-                "edition":
-                datetime.fromisoformat("2017-01-01T12:30:59.000000"),
-                "vocab_ids": {"vocab_id", "0"}
-            },
-        }
+        list_header = dict()
+        # list_header = {
+        #     0: {
+        #         "name": "list_name",
+        #         "list_id": 0,
+        #         "edition":
+        #         datetime.fromisoformat("2021-01-23T02:26:15.196899"),
+        #         "vocab_ids":
+        #         set(str(vocab_int) for vocab_int in range(1, 100))
+        #     },
+        #     1: {
+        #         "name": "list_name",
+        #         "list_id": 1,
+        #         "edition":
+        #         datetime.fromisoformat("2017-01-01T12:30:59.000000"),
+        #         "vocab_ids": {"vocab_id", "0"}
+        #     },
+        # }
+        barron_database_creator = BarronDatabaseCreator()
+        list_id, list_header = barron_database_creator.get_header()
+        list_header[list_id] = list_header
+
         header_data = list_header.get(kwargs["list_id"])
 
         # get vocab data
@@ -71,6 +77,8 @@ class ListDownloadMutation(graphene.Mutation):
         mark_colorses = (mark_color_dict.get(vocab_id, [])
                          for vocab_id in vocab_ids)
 
+        print("[ListDownloadedMutation] Combing Vocab and UserVocab")
+
         # combine them
         combined = (VocabUserVocab().from_vocab_and_user_vocab(
             vocab=vocab_db,
@@ -79,6 +87,7 @@ class ListDownloadMutation(graphene.Mutation):
                     for vocab_db, user_vocab_db, mark_colors in zip(
                         vocab_dbs, user_vocab_dbs, mark_colorses))
 
+        print("[ListDownloadedMutation] Returning the data")
         return ListDownloadMutation(header=VocabListHeader(
             name=header_data.get("name"),
             list_id=header_data.get("list_id"),

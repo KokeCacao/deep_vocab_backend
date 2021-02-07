@@ -32,7 +32,7 @@ app.config[
 app.config["JWT_TOKEN_ARGUMENT_NAME"] = "access_token"
 app.config["JWT_ERROR"] = "jwt_error"
 import datetime
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=15)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(days=30 * 12 * 4)
 
 auth = GraphQLAuth(app)

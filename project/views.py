@@ -154,15 +154,17 @@ def secure_download(**kwargs):
             }}""".format(uuid=kwargs["uuid"],
                          access_token=kwargs["access_token"],
                          list_id=kwargs["list_id"]))
-
+        print("[ListDownloadedMutation] start parsing result")
         extensions, invalid, to_dict, error_message, status = parse_result(
             result)
-        print("listDownload = {}".format(result.data["listDownload"]))
+        # print("listDownload = {}".format(result.data["listDownload"]))
 
+        print("[ListDownloadedMutation] start dump result")
         # json_result = json_dump(result.data, extensions, error_message)
         json_result = json_dump(result.data["listDownload"], None, None)
-        print("[DEBUG] result = {}".format(json_result))
+        # print("[DEBUG] result = {}".format(json_result))
 
+        print("[ListDownloadedMutation] returning")
         # TODO: consider using generator, see: https://stackoverflow.com/questions/12166970/in-python-using-flask-how-can-i-write-out-an-object-for-download
         return Response(response=json_result,
                         status=status,
