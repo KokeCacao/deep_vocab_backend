@@ -110,10 +110,10 @@ class BarronDatabaseCreator:
         added_vocab = set()
 
         for index, row in tqdm(df.iterrows()):
-            vocab_id = "Barron:" + row["Vocab"]
+            vocab = str(row["Vocab"]).lower()
+            vocab_id = "Barron:" + vocab
             edition = datetime.utcnow()
             list_id = self.list_id
-            vocab = str(row["Vocab"]).lower()
 
             typ = self.extract_type(row["Type"])
             main_translation = row["VocabMeaning1"]
