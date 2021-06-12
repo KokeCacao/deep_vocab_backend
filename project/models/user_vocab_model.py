@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.sql.expression import or_
 from werkzeug.exceptions import InternalServerError
 from .model import db
@@ -16,6 +17,8 @@ class UserVocabDB(db.Model):
     star_mark = bool; non-unique; default(false);
     pin_mark = bool; non-unique; default(false);
     added_mark = bool; non-unique; default(false);
+    long_term_mem = int; non-unique; default(0);
+    refresh_time = date_time; non-unique; non-null;
     """
     __tablename__ = 'userVocabDB'
     id = db.Column(db.Integer, primary_key=True, nullable=False)
@@ -32,13 +35,15 @@ class UserVocabDB(db.Model):
     star_mark = db.Column(db.Boolean, default=False)
     pin_mark = db.Column(db.Boolean, default=False)
     added_mark = db.Column(db.Boolean, default=False)
+    long_term_mem = db.Column(db.Float, default=0.0)
+    refresh_time = db.Column(db.DateTime, default=datetime.utcnow)
 
     auth_db = db.relationship("AuthDB", back_populates="user_vocab_db")
     vocab_db = db.relationship("VocabDB", back_populates="user_vocab_db")
 
     def __init__(self, id, uuid, vocab_id, nth_word, nth_appear,
                  edited_meaning, book_marked, question_mark, star_mark,
-                 pin_mark, added_mark):
+                 pin_mark, added_mark, long_term_mem, refresh_time):
         self.id = id
         self.uuid = uuid
         self.vocab_id = vocab_id
@@ -50,6 +55,8 @@ class UserVocabDB(db.Model):
         self.star_mark = star_mark
         self.pin_mark = pin_mark
         self.added_mark = added_mark
+        self.long_term_mem = long_term_mem
+        self.refresh_time = refresh_time
 
     @staticmethod
     def add(uuid,
@@ -61,7 +68,9 @@ class UserVocabDB(db.Model):
             question_mark=None,
             star_mark=None,
             pin_mark=None,
-            added_mark=None):
+            added_mark=None,
+            long_term_mem=None,
+            refresh_time=None):
         user_vocab_db = UserVocabDB(
             id=None,
             uuid=uuid,
@@ -74,6 +83,8 @@ class UserVocabDB(db.Model):
             star_mark=star_mark,
             pin_mark=pin_mark,
             added_mark=added_mark,
+            long_term_mem=long_term_mem,
+            refresh_time=refresh_time,
         )
         db.session.add(user_vocab_db)
         return user_vocab_db
@@ -89,11 +100,35 @@ class UserVocabDB(db.Model):
             or_(*[UserVocabDB.vocab_id == x for x in vocab_ids])).all()
 
     @staticmethod
+    def get_by_uuid(uuid, sorted=False):
+        result = UserVocabDB.query.filter(UserVocabDB.uuid == uuid)
+        if sorted: return result.order_by(UserVocabDB.refresh_time.asc()).all()
+        else: return result.all()
+
+    @staticmethod
     def get_by_uuid_vocab_id(uuid, vocab_id):
         q = UserVocabDB.query.filter(UserVocabDB.uuid == uuid).filter(
             UserVocabDB.vocab_id == vocab_id)
         assert q.count() <= 1
         return q.first()
+
+    # This function is untested
+    @staticmethod
+    def get_by_uuid_to_vocab_id_dict(uuid, sorted=False):
+        user_vocab_dbs = UserVocabDB.get_by_uuid(uuid, sorted=sorted)
+
+        # vocab_dict = {vocab_id: refresh_time}
+        vocab_dict = dict()
+        for user_vocab_db in user_vocab_dbs:
+            vocab_dict[user_vocab_db.vocab_id] = user_vocab_db.refresh_time
+        return vocab_dict
+
+    @staticmethod
+    def get_by_uuid_after_now(uuid, sorted=False):
+        result = UserVocabDB.query.filter(
+            UserVocabDB.refresh_time < datetime.utcnow())
+        if sorted: return result.order_by(UserVocabDB.refresh_time.asc()).all()
+        else: return result.all()
 
     @staticmethod
     def update(user_vocab_db, **kwargs):
@@ -120,4 +155,8 @@ class UserVocabDB(db.Model):
         if 'pin_mark' in kwargs: user_vocab_db.pin_mark = kwargs['pin_mark']
         if 'added_mark' in kwargs:
             user_vocab_db.added_mark = kwargs['added_mark']
+        if 'long_term_mem' in kwargs:
+            user_vocab_db.long_term_mem = kwargs['long_term_mem']
+        if 'refresh_time' in kwargs:
+            user_vocab_db.refresh_time = kwargs['refresh_time']
         return user_vocab_db

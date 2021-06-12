@@ -56,9 +56,11 @@ class MarkColorDB(db.Model):
         else: return result.all()
 
     @staticmethod
-    def get_by_uuid_vocab_id(uuid, vocab_id):
-        return MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
-            MarkColorDB.vocab_id == vocab_id).all()
+    def get_by_uuid_vocab_id(uuid, vocab_id, sorted=False):
+        result = MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
+            MarkColorDB.vocab_id == vocab_id)
+        if sorted: return resul.order_by(MarkColorDB.time.asc()).all()
+        else: return result.all()
 
     @staticmethod
     def get_by_uuid_to_vocab_id_dict(uuid, sorted=False):

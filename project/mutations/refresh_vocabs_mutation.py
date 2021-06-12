@@ -5,7 +5,7 @@ from ..models.mark_color_model import ColorModel, MarkColorDB
 from ..models.vocab_model import VocabDB
 from ..models.mark_color_model import MarkColorDB
 from ..models.user_vocab_model import UserVocabDB
-from ..models.model import Vocab
+from ..models.model import db, Vocab
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -74,18 +74,15 @@ class RefreshVocabMutation(graphene.Mutation):
         kwargs = parse_kwargs(kwargs)
         auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
 
-        # mark_color_dict = {vocab_id: [MarkColor]}
-        mark_color_dict = MarkColorDB.get_by_uuid_to_vocab_id_dict(uuid,
-                                                                   sorted=True)
+        user_vocab_dbs = UserVocabDB.get_by_uuid_after_now(uuid, sorted=True)
 
         # selected = [vocab_id that has last mark == MarkColor.black]
         selected_vocab_id = [
-            vocab_id for vocab_id, mark_color_dbs in mark_color_dict.items()
-            if mark_color_dbs[-1].color == ColorModel.black
+            user_vocab_db.vocab_id for user_vocab_db in user_vocab_dbs
         ]
 
         # add nth_appear
-        for user_vocab_db in UserVocabDB.gets(selected_vocab_id):
+        for user_vocab_db in user_vocab_dbs:
             assert user_vocab_db != None
             UserVocabDB.update(user_vocab_db,
                                nth_appear=user_vocab_db.nth_appear + 1)
@@ -93,5 +90,5 @@ class RefreshVocabMutation(graphene.Mutation):
         # TODO: if client only wants vocabId, return here, else continue
         selected_vocab_db = VocabDB.gets(selected_vocab_id)
 
-        # db.session.commit()
+        db.session.commit()
         return RefreshVocabMutation(vocabs=selected_vocab_db)

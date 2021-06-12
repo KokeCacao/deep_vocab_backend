@@ -1,4 +1,6 @@
+from datetime import datetime, timedelta
 import graphene
+import math
 
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
 from ..models.model import db, ColorModel
@@ -54,41 +56,117 @@ class MarkColorMutation(graphene.Mutation):
         if index < 0: raise Exception("400|[Warning] index < 0")
 
         # make sure index-1 already exist in database or index=0
-        if index != 0 and MarkColorDB.get_by_uuid_vocab_id_index(
-                uuid, kwargs["vocab_id"], index - 1) == None:
+        last_mark_color_db = MarkColorDB.get_by_uuid_vocab_id_index(
+            uuid, kwargs["vocab_id"], index - 1)
+        if index != 0 and last_mark_color_db == None:
             raise Exception("400|[Warning] index-1 does not exist in database")
 
         # if index already exist in database, edit such entry, return such entry
+        # TODO: if index already exist in database, delete entries after it
         mark_color_db = MarkColorDB.get_by_uuid_vocab_id_index(
             uuid, kwargs["vocab_id"], index)
         if mark_color_db != None:
             mark_color_db = MarkColorDB.update(mark_color_db,
                                                color=kwargs["color"],
                                                time=kwargs["time"])
-            db.session.commit()
-            return MarkColorMutation(
-                vocab_id=mark_color_db.vocab_id,
-                index=mark_color_db.index,
-                color=mark_color_db.color,
-                time=mark_color_db.time,
-            )
+        else:
+            # else create new entry
+            mark_color_db = MarkColorDB.add(
+                uuid=uuid,
+                vocab_id=kwargs["vocab_id"],
+                index=kwargs["index"],
+                color=kwargs["color"],
+                time=kwargs["time"])  # TODO: use server time instead?
 
-        # else create new entry
-        mark_color_db = MarkColorDB.add(uuid=uuid,
-                                        vocab_id=kwargs["vocab_id"],
-                                        index=kwargs["index"],
-                                        color=kwargs["color"],
-                                        time=kwargs["time"])
-        # add nth_word when needed
-        if index == 0:
-            user_vocab_db = UserVocabDB.get(kwargs["vocab_id"])
-            if user_vocab_db is None:
-                UserVocabDB.add(uuid=uuid,
-                                vocab_id=kwargs["vocab_id"],
-                                nth_word=1)
+        # add UserVocabDB when needed
+        # add nth_word, calculate refresh time
+        user_vocab_db = UserVocabDB.get_by_uuid_vocab_id(
+            uuid, kwargs["vocab_id"])
+        if user_vocab_db is None:
+            # DANGEROUS: specify `long_term_mem=0.0` is necessary
+            # although it is initialized to 0.0 anyway
+            # because we will use `user_vocab_db` later in our code.
+            # otherwise long_term_mem will be NULL
+            # TODO: don't return when doing "add" instruction, avoid confusion
+            user_vocab_db = UserVocabDB.add(uuid=uuid,
+                                            vocab_id=kwargs["vocab_id"],
+                                            nth_word=1,
+                                            long_term_mem=0.0)
+        else:
+            user_vocab_db = UserVocabDB.update(
+                user_vocab_db, nth_word=user_vocab_db.nth_word + 1)
+
+        # calculate the time when this vocab should appear in task bar
+        def get_LTM_and_refresh_time(user_vocab_db, color, last_mark_color_db):
+            """
+            This function does two things:
+            1. return the refresh time (next time in which user should recieve new push notification) by 50% sort term memory
+            2. update internal long term memory in database
+
+            y = l+\left(100-l\right)\cdot e^{\frac{-x}{s}}
+            s = calculated by MarkColor
+            l = LTM stored in vocab
+            best time when y = 50
+            """
+            # Settings of Constants
+            desired_short_term_mem = 50.0  # could be variable
+            mem_max = 100.0  # constant
+
+            # calculate memory stability based on mark color
+            switch = {
+                "black": 60.0,  # 60s will <50% if no LTM, 4min if 50% LTM
+                "red":
+                5.0 * 60.0,  # 5min will <50% if no LTM, 58min if 50% LTM
+                "yellow":
+                25.0 * 60.0,  # 25min will <50% if no LTM, 83min if 50% LTM
+                "green":
+                125.0 * 60.0,  # 2h will <50% if no LTM, 2.41h if 50% LTM
+            }
+            mem_stability = switch[color]
+
+            # assume 60s time difference if it is the first time to remember
+            time_diff = 60.0 if last_mark_color_db == None else (
+                datetime.utcnow() - last_mark_color_db.time).total_seconds()
+            long_term_mem_lost_by_time = 0.005 * time_diff
+
+            # update long_term_mem by subtracting lost due to time before use it to calculate more
+            long_term_mem = user_vocab_db.long_term_mem - long_term_mem_lost_by_time
+
+            # calculate short_term_mem before user look at the vocab
+            short_term_mem_tmp = (mem_max - long_term_mem) * math.exp(
+                -time_diff / mem_stability)
+            short_term_mem = long_term_mem + short_term_mem_tmp
+            print("Your short_term_mem is {}".format(short_term_mem))
+
+            # now that the user looked at the vocab, update user's new long_term_mem
+            # (mem_max - short_term_mem): as our short term memory decrease, the better we memorize
+            # (2*long_term_mem_lost_by_time): but after a long long time, our memory basically start again, and long_term_mem should decrease
+            long_term_mem = (mem_max -
+                             short_term_mem) - (2 * long_term_mem_lost_by_time)
+            print("Your long_term_mem is {}".format(long_term_mem))
+
+            # although mem_stability is not relevent, we use it as a predictor of the curve
+            if desired_short_term_mem > long_term_mem:
+                # approximation of formula above
+                refresh_time_diff = -mem_stability * math.log(
+                    (desired_short_term_mem - long_term_mem) /
+                    (mem_max - long_term_mem))
+                assert refresh_time_diff > 0
             else:
-                UserVocabDB.update(user_vocab_db,
-                                   nth_word=user_vocab_db.nth_word + 1)
+                refresh_time_diff = 300.0  # constant, will approximate later. Represent how often should remind after LTM > 50%
+
+            refresh_time = datetime.utcnow() + timedelta(
+                0, refresh_time_diff)  # days, seconds, then other fields.
+            print("We will update after {} seconds ({})".format(
+                refresh_time_diff, refresh_time.isoformat()))
+
+            return long_term_mem, refresh_time
+
+        long_term_mem, refresh_time = get_LTM_and_refresh_time(
+            user_vocab_db, kwargs["color"], last_mark_color_db)
+        UserVocabDB.update(user_vocab_db,
+                           long_term_mem=long_term_mem,
+                           refresh_time=refresh_time)
 
         db.session.commit()
         return MarkColorMutation(
