@@ -139,6 +139,15 @@ class VocabUserVocab(Vocab, UserVocab):
             self.star_mark = user_vocab.star_mark
             self.pin_mark = user_vocab.pin_mark
             self.added_mark = user_vocab.added_mark
+        else:
+            # Initialization to client when no record on database
+            self.nth_word = 0
+            self.nth_appear = 0
+            self.book_marked = False
+            self.question_mark = False
+            self.star_mark = False
+            self.pin_mark = False
+            self.added_mark = False
         if mark_colors_list is not None and mark_colors_list != []:
             self.mark_colors = mark_colors_list
         return self
