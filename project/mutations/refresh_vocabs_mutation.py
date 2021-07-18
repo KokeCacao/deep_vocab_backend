@@ -76,7 +76,6 @@ class RefreshVocabMutation(graphene.Mutation):
 
         user_vocab_dbs = UserVocabDB.get_by_uuid_after_now(uuid, sorted=True)
 
-        # selected = [vocab_id that has last mark == MarkColor.black]
         selected_vocab_id = [
             user_vocab_db.vocab_id for user_vocab_db in user_vocab_dbs
         ]

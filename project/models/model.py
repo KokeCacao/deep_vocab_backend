@@ -11,7 +11,8 @@ class SQLiteAlchemy(SQLAlchemy):
 
 # database stuff
 # 'sqlite:///:memory:' for memory db
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config[
+    'SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLiteAlchemy(app)
