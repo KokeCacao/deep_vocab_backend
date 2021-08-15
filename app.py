@@ -8,6 +8,8 @@ parser.add_argument('--verbose', '-v', dest='verbose', action='count', default=0
 parser.add_argument('--port', '-p', dest='port', default=5000, type=int, nargs='?', help='port number, default 5000')
 parser.add_argument('--host', dest='host', default='0.0.0.0', type=str, nargs='?', help='host address, default 0.0.0.0')
 parser.add_argument('--database', '-b', dest='database', default='/home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db', type=str, nargs='?', help='database file location, default /home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db')
+parser.add_argument('--csv', '-c', dest='csv', default='/home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv', type=str, nargs='?', help='csv file location, default /home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv')
+
 args = parser.parse_args()
 
 if __name__ == "__main__":

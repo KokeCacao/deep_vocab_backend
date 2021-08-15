@@ -1,5 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
+from app import args # app here refers to app.py, but Flask()
 
 from ..models.vocab_model import VocabDB, TypeModel
 from datetime import datetime
@@ -43,7 +44,7 @@ def singleton(cls):
 @singleton
 class BarronDatabaseCreator:
 
-    path = "/home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv"
+    path = args.csv
     list_id = 0
     list_header = {
         "name": "Barron3500",
