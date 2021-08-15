@@ -1,8 +1,21 @@
-from project import app
+
+import argparse
+
+print("Parsing Arguments...")
+parser = argparse.ArgumentParser(prog="python app.py", description="Lauch backend of DeepVocab")
+parser.add_argument('--version', action='version', version='%(prog)s v0.1')
+parser.add_argument('--verbose', '-v', dest='verbose', action='count', default=0) # -vvv
+parser.add_argument('--port', '-p', dest='port', default=5000, type=int, nargs='?', help='port number, default 5000')
+parser.add_argument('--host', dest='host', default='0.0.0.0', type=str, nargs='?', help='host address, default 0.0.0.0')
+parser.add_argument('--database', '-b', dest='database', default='/home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db', type=str, nargs='?', help='database file location, default /home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db')
+args = parser.parse_args()
 
 if __name__ == "__main__":
+
+    from project import app
+    
     # if you want to use 80, see: https://gist.github.com/justinmklam/f13bb53be9bb15ec182b4877c9e9958d
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host=args.host, port=args.port, debug=True)
 
 # TO RUN THIS PROJECT
 # > conda activate web

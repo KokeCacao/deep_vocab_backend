@@ -1,5 +1,6 @@
 # database stuff
 from flask_sqlalchemy import SQLAlchemy  # instead of `from flask.ext.sqlalchemy import SQLAlchemy`
+from app import args # app here refers to app.py, but Flask()
 from .. import app
 
 
@@ -11,8 +12,9 @@ class SQLiteAlchemy(SQLAlchemy):
 
 # database stuff
 # 'sqlite:///:memory:' for memory db
+print("App Config and Init SQLAlchemy...")
 app.config[
-    'SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db'
+    'SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + args.database
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLiteAlchemy(app)

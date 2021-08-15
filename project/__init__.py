@@ -12,6 +12,7 @@
 
 # flask stuff
 from flask import Flask
+from app import args # app here refers to app.py, but Flask()
 # app = None
 # try:
 app = Flask(__name__)
