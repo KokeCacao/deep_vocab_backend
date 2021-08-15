@@ -1,7 +1,8 @@
 from project import app
 
 if __name__ == "__main__":
-    app.run()
+    # if you want to use 80, see: https://gist.github.com/justinmklam/f13bb53be9bb15ec182b4877c9e9958d
+    app.run(host="0.0.0.0", port=5000, debug=True)
 
 # TO RUN THIS PROJECT
 # > conda activate web
