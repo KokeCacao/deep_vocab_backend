@@ -59,7 +59,7 @@ class MarkColorDB(db.Model):
     def get_by_uuid_vocab_id(uuid, vocab_id, sorted=False):
         result = MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
             MarkColorDB.vocab_id == vocab_id)
-        if sorted: return resul.order_by(MarkColorDB.time.asc()).all()
+        if sorted: return result.order_by(MarkColorDB.time.asc()).all()
         else: return result.all()
 
     @staticmethod
@@ -81,6 +81,14 @@ class MarkColorDB(db.Model):
                 MarkColorDB.index == index)
         assert q.count() <= 1
         return q.first()
+
+    # not used
+    @staticmethod
+    def get_by_uuid_time_interval(uuid, from_time, to_time, sorted=False):
+        result = MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
+            MarkColorDB.time > from_time).filter(MarkColorDB.time < to_time)
+        if sorted: return result.order_by(MarkColorDB.time.asc()).all()
+        else: return result.all()
 
     @staticmethod
     def update(mark_color_db, **kwargs):
