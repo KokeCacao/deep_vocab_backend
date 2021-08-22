@@ -1,6 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
-from app import args # app here refers to app.py, but Flask()
+from app import args  # app here refers to app.py, but Flask()
 
 from ..models.vocab_model import VocabDB, TypeModel
 from datetime import datetime
@@ -154,7 +154,6 @@ class BarronDatabaseCreator:
                     added_vocab.add(vocab_id)
                 else:
                     print("400|{} already exist".format(vocab_db))
-                    # raise Exception("400|{} already exist".format(vocab_db))
 
         self.list_header["edition"] = datetime.utcnow()
         self.list_header["vocab_ids"] = added_vocab

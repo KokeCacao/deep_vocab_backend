@@ -1,4 +1,5 @@
 import graphene
+from sqlalchemy import exc
 
 from ..models.model import db
 from ..algorithm.vocab_database_creator import BarronDatabaseCreator
@@ -27,7 +28,12 @@ class TestMutation(graphene.Mutation):
             raise Exception("400|Invalid Key")
         if action == "add to db":
             BarronDatabaseCreator().add_barron_to_database()
-            db.session.commit()
+            try:
+                db.session.commit()
+            except exc.IntegrityError as e:
+                print("[SQL Error] " + e.detail)
+                return TestMutation(success=False)
+            else:
+                return TestMutation(success=True)
         elif action == "delete db":
-            pass
-        return TestMutation(success=True)
+            return TestMutation(success=False)

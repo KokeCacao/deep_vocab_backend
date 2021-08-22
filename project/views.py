@@ -10,6 +10,18 @@ from flask_graphql_auth import (
 )
 
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def get_query(request):
     if (request.data == None or len(request.data) < 1):
         raise Exception(
@@ -20,7 +32,7 @@ def get_query(request):
     try:
         data = json.loads(
             request.data)  # turn unformatted json into json format
-        print("[DEBUG] json = {}".format(data))
+        print(bcolors.BOLD + "[DEBUG] json = {}".format(data) + bcolors.ENDC)
     except:
         raise Exception(
             "404|[Warning] Invalid Request, can't parse to json. request.data={}, len={}"
@@ -37,14 +49,15 @@ def parse_result(result):
     try:
         status = 200 if errors is None else int(
             errors[0].message.split("|")[0])
-    except:
+    except ValueError:
         raise InternalServerError(
             "Cannot parse error to string. That means this is not a client error."
         )
     error_message = None if status == 200 else errors[0].message.split("|")[1]
     if error_message != None:
-        print("[DEBUG] error = {}, error code = {}, message = {}".format(
-            errors, status, error_message))
+        print(bcolors.BOLD +
+              "[DEBUG] error = {}, error code = {}, message = {}".format(
+                  errors, status, error_message) + bcolors.ENDC)
 
     if result.data is None:
         error_message = "Invalid request"
@@ -85,7 +98,7 @@ def graphql():
         extensions, invalid, to_dict, error_message, status = parse_result(
             result)
         json_result = json_dump(result.data, extensions, error_message)
-        print("[DEBUG] result = {}".format(json_result))
+        # print("[DEBUG] result = {}".format(json_result))
 
         return Response(response=json_result,
                         status=status,

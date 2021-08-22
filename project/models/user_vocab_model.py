@@ -38,6 +38,10 @@ class UserVocabDB(db.Model):
     long_term_mem = db.Column(db.Float, default=0.0)
     refresh_time = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # See: https://stackoverflow.com/a/10061143/9569969
+    # and https://stackoverflow.com/a/61745281/9569969
+    db.UniqueConstraint(uuid, vocab_id)
+
     auth_db = db.relationship("AuthDB", back_populates="user_vocab_db")
     vocab_db = db.relationship("VocabDB", back_populates="user_vocab_db")
 
