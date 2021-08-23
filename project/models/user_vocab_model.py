@@ -110,10 +110,16 @@ class UserVocabDB(db.Model):
         else: return result.all()
 
     @staticmethod
-    def get_by_uuid_vocab_id(uuid, vocab_id):
+    def get_by_uuid_vocab_id(uuid,
+                             vocab_id,
+                             with_for_update=False,
+                             erase_cache=False):
         q = UserVocabDB.query.filter(UserVocabDB.uuid == uuid).filter(
             UserVocabDB.vocab_id == vocab_id)
-        assert q.count() <= 1
+
+        if with_for_update: q = q.with_for_update()
+        if erase_cache: q = q.populate_existing()
+
         return q.first()
 
     # This function is untested
@@ -128,15 +134,21 @@ class UserVocabDB(db.Model):
         return vocab_dict
 
     @staticmethod
-    def get_by_uuid_after_now(uuid, sorted=False):
-        result = UserVocabDB.query.filter(
+    def get_by_uuid_after_now(uuid,
+                              sorted=False,
+                              with_for_update=False,
+                              erase_cache=False):
+        q = UserVocabDB.query.filter(
             UserVocabDB.refresh_time < datetime.utcnow())
-        if sorted: return result.order_by(UserVocabDB.refresh_time.asc()).all()
-        else: return result.all()
+
+        if sorted: q = q.order_by(UserVocabDB.refresh_time.asc())
+        if with_for_update: q = q.with_for_update()
+        if erase_cache: q = q.populate_existing()
+
+        return q.all()
 
     @staticmethod
     def update(user_vocab_db, **kwargs):
-        assert user_vocab_db is not None
         if 'id' in kwargs:
             raise InternalServerError("[UserVocabModel] id can't be changed.")
         if 'uuid' in kwargs:

@@ -5,6 +5,8 @@ from ..models.auth_model import AuthDB
 from ..utils.util import parse_kwargs
 from ..models.model import db
 from ..models.user_model import UserDB
+
+from sqlalchemy import exc
 from flask_graphql_auth import (
     create_access_token,
     create_refresh_token,
@@ -43,19 +45,20 @@ class CreateUserMutation(graphene.Mutation):
         kwargs = parse_kwargs(kwargs)
 
         uuid = str(UUID.uuid4())
+        AuthDB.add(
+            uuid=uuid,
+            email=kwargs["email"],
+            user_name=kwargs["user_name"],
+            password=kwargs["password"],
+        )
+        UserDB.add(
+            uuid=uuid,
+            user_name=kwargs["user_name"],
+        )
+
         try:
-            AuthDB.add(
-                uuid=uuid,
-                email=kwargs["email"],
-                user_name=kwargs["user_name"],
-                password=kwargs["password"],
-            )
-            UserDB.add(
-                uuid=uuid,
-                user_name=kwargs["user_name"],
-            )
             db.session.commit()
-        except:
+        except exc.IntegrityError:
             raise Exception("400|[Warning] user_name or email already exists.")
 
         return CreateUserMutation(uuid=uuid,

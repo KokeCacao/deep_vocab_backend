@@ -5,6 +5,8 @@ from ..utils.util import parse_kwargs, check_jwt_with_uuid
 from ..models.model import db
 from ..models.user_vocab_model import UserVocabDB
 from ..models.user_model import UserDB
+
+from sqlalchemy import exc
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -55,7 +57,10 @@ class UserVocabMutation(graphene.Mutation):
 
         auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
         user_vocab_db = UserVocabDB.get_by_uuid_vocab_id(
-            uuid=uuid, vocab_id=kwargs["vocab_id"])
+            uuid=uuid,
+            vocab_id=kwargs["vocab_id"],
+            with_for_update=True,
+            erase_cache=True)
         if user_vocab_db is None:
             user_db = UserDB.get(uuid=uuid)
             if (user_db is None):
@@ -81,6 +86,14 @@ class UserVocabMutation(graphene.Mutation):
                 pin_mark=kwargs["pin_mark"] if "pin_mark" in kwargs else None,
                 added_mark=kwargs["added_mark"]
                 if "added_mark" in kwargs else None)
+
+            try:
+                db.session.commit()
+            except exc.IntegrityError:
+                # user_vocab_db = UserVocabDB.get_by_uuid_vocab_id(
+                #     uuid=uuid, vocab_id=kwargs["vocab_id"])
+                raise Exception("400|[Warning] user vocab already exists.")
+
         else:
             filtered_kwargs = {
                 k: kwargs[k]
@@ -89,11 +102,8 @@ class UserVocabMutation(graphene.Mutation):
                     "star_mark", "pin_mark", "added_mark"
                 ] if k in kwargs
             }
-            print("filtered kwargs = {}".format(filtered_kwargs))
             user_vocab_db = UserVocabDB.update(user_vocab_db,
                                                **filtered_kwargs)
-
-        db.session.commit()
         return UserVocabMutation(
             vocab_id=user_vocab_db.vocab_id,
             nth_word=user_vocab_db.nth_word,

@@ -6,6 +6,8 @@ from ..utils.util import parse_kwargs, check_jwt_with_uuid
 from ..models.model import db, ColorModel
 from ..models.mark_color_model import MarkColorDB
 from ..models.user_vocab_model import UserVocabDB
+
+from sqlalchemy import exc
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
@@ -64,7 +66,11 @@ class MarkColorMutation(graphene.Mutation):
         # if index already exist in database, edit such entry, return such entry
         # TODO: if index already exist in database, delete entries after it
         mark_color_db = MarkColorDB.get_by_uuid_vocab_id_index(
-            uuid, kwargs["vocab_id"], index)
+            uuid,
+            kwargs["vocab_id"],
+            index,
+            with_for_update=True,
+            erase_cache=True)
         if mark_color_db != None:
             mark_color_db = MarkColorDB.update(mark_color_db,
                                                color=kwargs["color"],
@@ -80,18 +86,12 @@ class MarkColorMutation(graphene.Mutation):
 
         # add UserVocabDB when needed
         # add nth_word, calculate refresh time
-        user_vocab_db = UserVocabDB.get_by_uuid_vocab_id(
-            uuid, kwargs["vocab_id"])
+        user_vocab_db = UserVocabDB.get_by_uuid_vocab_id(uuid,
+                                                         kwargs["vocab_id"],
+                                                         with_for_update=True,
+                                                         erase_cache=True)
         if user_vocab_db is None:
-            # DANGEROUS: specify `long_term_mem=0.0` is necessary
-            # although it is initialized to 0.0 anyway
-            # because we will use `user_vocab_db` later in our code.
-            # otherwise long_term_mem will be NULL
-            # TODO: don't return when doing "add" instruction, avoid confusion
-            user_vocab_db = UserVocabDB.add(uuid=uuid,
-                                            vocab_id=kwargs["vocab_id"],
-                                            nth_word=1,
-                                            long_term_mem=0.0)
+            raise Exception("400|[Warning] vocab not added to UserVocabDB.")
         else:
             user_vocab_db = UserVocabDB.update(
                 user_vocab_db, nth_word=user_vocab_db.nth_word + 1)
@@ -182,7 +182,13 @@ class MarkColorMutation(graphene.Mutation):
                            long_term_mem=long_term_mem,
                            refresh_time=refresh_time)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except exc.IntegrityError:
+            raise Exception(
+                "400|[Warning] Unique constraints failed due to concurrency in uuid_vocab_id_index."
+            )
+
         return MarkColorMutation(
             vocab_id=mark_color_db.vocab_id,
             index=mark_color_db.index,

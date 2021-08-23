@@ -46,7 +46,7 @@ class UserMutation(graphene.Mutation):
         auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
 
         # TODO: check if access_token in database
-        user_db = UserDB.get(uuid)
+        user_db = UserDB.get(uuid, with_for_update=True, erase_cache=True)
         if user_db is None:
             raise InternalServerError(
                 "for some reason user {} doesn't have auth database.".format(

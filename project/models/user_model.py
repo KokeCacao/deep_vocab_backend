@@ -43,7 +43,6 @@ class UserDB(db.Model):
             avatar_url=None,
             level=None,
             xp=None):
-        assert UserDB.get(uuid) is None
         user_db = UserDB(uuid=uuid,
                          user_name=user_name,
                          display_name=display_name,
@@ -54,8 +53,13 @@ class UserDB(db.Model):
         return user_db
 
     @staticmethod
-    def get(uuid):
-        return UserDB.query.get(uuid)
+    def get(uuid, with_for_update=False, erase_cache=False):
+        q = UserDB.query
+
+        if with_for_update: q = q.with_for_update()
+        if erase_cache: q = q.populate_existing()
+
+        return q.get(uuid)
 
     @staticmethod
     def get_by_user_name(user_name):

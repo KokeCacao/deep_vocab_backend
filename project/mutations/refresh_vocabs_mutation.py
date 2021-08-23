@@ -74,7 +74,8 @@ class RefreshVocabMutation(graphene.Mutation):
         kwargs = parse_kwargs(kwargs)
         auth_db, uuid = check_jwt_with_uuid(kwargs, get_jwt_identity())
 
-        user_vocab_dbs = UserVocabDB.get_by_uuid_after_now(uuid, sorted=True)
+        user_vocab_dbs = UserVocabDB.get_by_uuid_after_now(
+            uuid, sorted=True, with_for_update=True, erase_cache=True)
 
         selected_vocab_id = [
             user_vocab_db.vocab_id for user_vocab_db in user_vocab_dbs
@@ -82,7 +83,6 @@ class RefreshVocabMutation(graphene.Mutation):
 
         # add nth_appear
         for user_vocab_db in user_vocab_dbs:
-            assert user_vocab_db != None
             UserVocabDB.update(user_vocab_db,
                                nth_appear=user_vocab_db.nth_appear + 1)
 

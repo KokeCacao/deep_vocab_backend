@@ -23,6 +23,8 @@ class MarkColorDB(db.Model):
     color = db.Column(db.Enum(ColorModel), nullable=False)
     time = db.Column(db.DateTime, nullable=False)
 
+    db.UniqueConstraint(uuid, vocab_id, index)
+
     auth_db = db.relationship("AuthDB", back_populates="mark_color_db")
     vocab_db = db.relationship("VocabDB", back_populates="mark_color_db")
 
@@ -75,11 +77,18 @@ class MarkColorDB(db.Model):
         return vocab_dict
 
     @staticmethod
-    def get_by_uuid_vocab_id_index(uuid, vocab_id, index):
+    def get_by_uuid_vocab_id_index(uuid,
+                                   vocab_id,
+                                   index,
+                                   with_for_update=False,
+                                   erase_cache=False):
         q = MarkColorDB.query.filter(MarkColorDB.uuid == uuid).filter(
             MarkColorDB.vocab_id == vocab_id).filter(
                 MarkColorDB.index == index)
-        assert q.count() <= 1
+
+        if with_for_update: q = q.with_for_update()
+        if erase_cache: q = q.populate_existing()
+
         return q.first()
 
     # not used
@@ -92,7 +101,6 @@ class MarkColorDB(db.Model):
 
     @staticmethod
     def update(mark_color_db, **kwargs):
-        assert mark_color_db is not None
         if 'id' in kwargs:
             raise InternalServerError("[MarkColorModel] id can't be changed.")
         if 'vocab_id' in kwargs:

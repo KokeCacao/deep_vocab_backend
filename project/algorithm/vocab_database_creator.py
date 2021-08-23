@@ -27,7 +27,7 @@ def add_dymmy_to_database():
                 example_sentences=["example_sentences"],
             )
         else:
-            raise Exception("400|Already Added")
+            raise Exception("400|[Warning] already added")
 
 
 def singleton(cls):
