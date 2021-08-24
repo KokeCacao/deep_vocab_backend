@@ -124,6 +124,12 @@ class BarronDatabaseCreator:
                 row["VocabMeaning4"], row["VocabMeaning5"],
                 row["VocabMeaning6"]
             ]
+
+            other_translation = [
+                i.replace("\n", "").replace(" ", "") for i in other_translation
+                if not pd.isnull(i)
+            ]
+
             main_sound = row["Pronounce1"]
             other_sound = None
             english_translation = row["EnglishTranslation"]
