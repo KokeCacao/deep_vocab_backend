@@ -37,7 +37,7 @@ def get_query(request):
         raise Exception(
             "404|[Warning] Invalid Request, can't parse to json. request.data={}, len={}"
             .format(request.data, len(request.data)))
-    return data["query"]
+    return data
 
 
 def parse_result(result):
@@ -53,6 +53,8 @@ def parse_result(result):
         raise InternalServerError(
             "Cannot parse error to string. That means this is not a client error."
         )
+    except AttributeError:
+        raise errors[0]
     error_message = None if status == 200 else errors[0].message.split("|")[1]
     if error_message != None:
         print(bcolors.BOLD +
@@ -91,9 +93,9 @@ def json_dump(data,
 @app.route("/graphql", methods=["POST"])
 def graphql():
     try:
-        query = get_query(request)
+        data = get_query(request)
 
-        result = schema.execute(query)
+        result = schema.execute(data["query"], variables=data["variables"])
 
         extensions, invalid, to_dict, error_message, status = parse_result(
             result)

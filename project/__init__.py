@@ -12,7 +12,7 @@
 
 # flask stuff
 from flask import Flask
-from app import args # app here refers to app.py, but Flask()
+from app import args  # app here refers to app.py, but Flask()
 # app = None
 # try:
 app = Flask(__name__)
@@ -24,6 +24,7 @@ app = Flask(__name__)
 
 # file download stuff
 app.config['DOWNLOAD_FOLDER'] = "download/"
+app.config['UPLOAD_FOLDER'] = "upload/"
 
 # flask-JWT stuff
 from flask_graphql_auth import GraphQLAuth

@@ -10,6 +10,7 @@ from .mutations.mark_color_mutation import MarkColorMutation
 from .mutations.user_vocab_mutation import UserVocabMutation
 from .mutations.refresh_vocabs_mutation import RefreshVocabMutation
 from .mutations.list_download_mutation import ListDownloadMutation
+from project.mutations.upload_mutation import UploadMutation
 
 
 # ...: means input with selection from all other variables
@@ -28,3 +29,4 @@ class Mutation(graphene.ObjectType):
     user_vocab = UserVocabMutation.Field()
     refresh_vocab = RefreshVocabMutation.Field()
     list_download = ListDownloadMutation.Field()
+    upload = UploadMutation.Field()
