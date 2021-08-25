@@ -1,5 +1,6 @@
 import graphene
 from .queries.user_query import UserQuery
+from .queries.update_query import UpdateQuery
 
 
 class HelloWorldQuery(object):
@@ -18,7 +19,7 @@ class HelloWorldQuery(object):
             parent, info)
 
 
-class Query(graphene.ObjectType, HelloWorldQuery, UserQuery):
+class Query(graphene.ObjectType, HelloWorldQuery, UserQuery, UpdateQuery):
     # create User field, with required uuid to pass in
     # if required is set to args, then the arg is required
     # if required is set to Field, then all args are required (I'm guessing)

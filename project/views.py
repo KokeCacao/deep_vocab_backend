@@ -95,7 +95,11 @@ def graphql():
     try:
         data = get_query(request)
 
-        result = schema.execute(data["query"], variables=data["variables"])
+        result = schema.execute(
+            data["query"],
+            variables=data["variables"] if "variables" in data else None,
+            operation_name=data["operationName"]
+            if "operationName" in data else None)
 
         extensions, invalid, to_dict, error_message, status = parse_result(
             result)
