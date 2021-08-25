@@ -1,6 +1,8 @@
 import graphene
 from datetime import datetime
 
+from ..utils.util import parse_kwargs
+
 
 class Update(graphene.ObjectType):
     latest_version = graphene.String()
@@ -37,6 +39,7 @@ class UpdateQuery(object):
 
     @staticmethod
     def resolve_update(parent, info, **kwargs):
+        kwargs = parse_kwargs(kwargs)
 
         version = kwargs["version"]
         build_number = kwargs["build_number"]

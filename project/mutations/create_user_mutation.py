@@ -2,10 +2,11 @@ import graphene
 import uuid as UUID
 
 from ..models.auth_model import AuthDB
-from ..utils.util import parse_kwargs
+from ..utils.util import parse_kwargs, sha256_six_int, send_verification
 from ..models.model import db
 from ..models.user_model import UserDB
 
+from datetime import datetime
 from sqlalchemy import exc
 from flask_graphql_auth import (
     create_access_token,
@@ -24,7 +25,7 @@ class CreateUserMutation(graphene.Mutation):
 
     EXAMPLE:
     mutation {
-        createUser(userName: "user3", password: "pass3", email: "3hanke.chen@ssfs.org") {
+        createUser(userName: "user3", password: "pass3", email: "hankec@andrew.cmu.edu") {
             uuid
             accessToken
             refreshToken
@@ -35,6 +36,7 @@ class CreateUserMutation(graphene.Mutation):
         user_name = graphene.String(required=True)
         password = graphene.String(required=True)
         email = graphene.String(required=True)
+        email_verification = graphene.String(required=False)
 
     uuid = graphene.UUID()
     access_token = graphene.String()
@@ -44,23 +46,65 @@ class CreateUserMutation(graphene.Mutation):
     def mutate(parent, info, **kwargs):
         kwargs = parse_kwargs(kwargs)
 
-        uuid = str(UUID.uuid4())
-        AuthDB.add(
-            uuid=uuid,
-            email=kwargs["email"],
-            user_name=kwargs["user_name"],
-            password=kwargs["password"],
-        )
-        UserDB.add(
-            uuid=uuid,
-            user_name=kwargs["user_name"],
-        )
+        if ("email_verification" in kwargs):
+            # check for verification code
+            email_verification = kwargs["email_verification"]
 
-        try:
-            db.session.commit()
-        except exc.IntegrityError:
-            raise Exception("400|[Warning] user_name or email already exists.")
+            time = datetime.utcnow().timestamp()  # float where int part is sec
+            time = int(time)
+            time = int(time / 60 / 10)  # floor division by 10 minutes
+            time2 = time + 1
 
-        return CreateUserMutation(uuid=uuid,
-                                  access_token=create_access_token(uuid),
-                                  refresh_token=create_refresh_token(uuid))
+            code = sha256_six_int("code={}/{}/{};time={}".format(
+                kwargs["email"], kwargs["user_name"], kwargs["password"],
+                time))
+            code2 = sha256_six_int("code={}/{}/{};time={}".format(
+                kwargs["email"], kwargs["user_name"], kwargs["password"],
+                time2))
+
+            if (email_verification != code and email_verification != code2):
+                raise Exception(
+                    "400|[Warning] invalid email verification code.")
+
+            # verification code is good!
+            uuid = str(UUID.uuid4())
+            AuthDB.add(
+                uuid=uuid,
+                email=kwargs["email"],
+                user_name=kwargs["user_name"],
+                password=kwargs["password"],
+            )
+            UserDB.add(
+                uuid=uuid,
+                user_name=kwargs["user_name"],
+            )
+
+            try:
+                db.session.commit()
+            except exc.IntegrityError:
+                raise Exception(
+                    "400|[Warning] user_name or email already exists.")
+
+            return CreateUserMutation(uuid=uuid,
+                                      access_token=create_access_token(uuid),
+                                      refresh_token=create_refresh_token(uuid))
+        else:
+            if AuthDB.get_by_email(kwargs["email"]) != None:
+                raise Exception("400|[Warning] email already exists.")
+            if AuthDB.get_by_user_name(kwargs["user_name"]) != None:
+                raise Exception("400|[Warning] user_name already exists.")
+
+            to = kwargs["email"]
+
+            time = datetime.utcnow().timestamp()  # float where int part is sec
+            time = int(time)
+            time = int(time / 60 / 10)  # floor division by 10 minutes
+
+            code = sha256_six_int("code={}/{}/{};time={}".format(
+                kwargs["email"], kwargs["user_name"], kwargs["password"],
+                time))
+            print("send code = {}; time = {}".format(code, time))
+            send_verification(to=[to], code=code)
+            return CreateUserMutation(uuid=None,
+                                      access_token=None,
+                                      refresh_token=None)
