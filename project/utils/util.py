@@ -16,6 +16,9 @@ from ..models.auth_model import AuthDB
 
 
 def parse_kwargs(kwargs):
+    for key in list(kwargs.keys()):
+        if str(kwargs[key]) == "":
+            del kwargs[key]
     if "uuid" in kwargs:
         kwargs["uuid"] = str(kwargs["uuid"])
         # print("[DEBUG] parsed uuid = {}".format(kwargs))
@@ -87,6 +90,50 @@ def send_verification(to=[], code="000000", debug=False):
     # See: https://vimsky.com/examples/detail/python-method-email.Utils.formatdate.html
     # with open('ExampleDoc.pdf', 'rb') as pdf:
     #     msg.add_attachment(pdf.read(), maintype='application', subtype='octet-stream', filename=pdf.name)
+    try:
+        if debug:
+            print(msg.as_string())
+        else:
+            with smtplib.SMTP_SSL(server, port) as smtp:
+                smtp.ehlo()
+                smtp.login(user, password)
+                smtp.sendmail(user, to, msg.as_string())
+    except:
+        return False
+    return True
+
+
+def send_change_password(to=[], code="000000", debug=False):
+    # login info
+    server = "smtp.qq.com"
+    port = 465
+    user = "i@kokecacao.me"
+    password = "hxgttnbbvzrcffjh"
+
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    dir_path = dir_path.split("/project")[0]  # should be ~/deep_vocab
+
+    with open(dir_path + "/project/html/recover.html") as file:
+        html = file.read()
+        html = html.replace("$$six_digit_code$$", code)
+        msg = MIMEText(html, 'html')
+
+    # these are provided by SMTP sender
+    # msg["Message-ID"] = "ID"
+    # msg["In-Reply-To"] = "ID"
+    # msg["References"] = "ID"
+    msg['Content-Type'] = "text/html; charset=utf-8"
+    msg['From'] = "{name} <{from_mail}>".format(name="Deep Vocab",
+                                                from_mail=user)
+    msg['To'] = ", ".join(to)
+    msg['Subject'] = "Your Verification Code for Recover Password"
+    msg['Date'] = email.utils.formatdate(localtime=True)
+    msg['Accept-Language'] = 'en-US'
+    msg['Content-Language'] = 'en-US'
+    msg['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click'
+    msg['List-Unsubscribe'] = '<https://kokecacao.me/unsubscribe/{id}>'.format(
+        id="+".join(to))
+
     try:
         if debug:
             print(msg.as_string())

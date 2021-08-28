@@ -65,17 +65,21 @@ class AuthDB(db.Model):
         return auth_db
 
     @staticmethod
-    def get(uuid):
-        return AuthDB.query.get(uuid)
+    def get(uuid, with_for_update=False):
+        q = AuthDB.query
+        if with_for_update: q = q.with_for_update()
+        return q.get(uuid)
 
     @staticmethod
-    def get_by_user_name(user_name):
+    def get_by_user_name(user_name, with_for_update=False):
         q = AuthDB.query.filter(AuthDB.user_name == user_name)
+        if with_for_update: q = q.with_for_update()
         return q.first()
 
     @staticmethod
-    def get_by_email(email):
+    def get_by_email(email, with_for_update=False):
         q = AuthDB.query.filter(AuthDB.email == email)
+        if with_for_update: q = q.with_for_update()
         return q.first()
 
     @staticmethod
