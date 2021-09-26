@@ -112,7 +112,7 @@ class CreateUserMutation(graphene.Mutation):
                 kwargs["email"], kwargs["user_name"], kwargs["password"],
                 time))
             print("send create code = {}; time = {}".format(code, time))
-            send_verification(to=[to], code=code, debug=True)
+            send_verification(to=[to], code=code)
             return CreateUserMutation(uuid=None,
                                       access_token=None,
                                       refresh_token=None)
