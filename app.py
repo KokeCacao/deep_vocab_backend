@@ -2,7 +2,7 @@
 import argparse
 
 print("Parsing Arguments...")
-parser = argparse.ArgumentParser(prog="python app.py", description="Lauch backend of DeepVocab")
+parser = argparse.ArgumentParser(prog="python app.py", description="Launch backend of DeepVocab")
 parser.add_argument('--version', action='version', version='%(prog)s v0.1')
 parser.add_argument('--verbose', '-v', dest='verbose', action='count', default=0) # -vvv
 parser.add_argument('--port', '-p', dest='port', default=5000, type=int, nargs='?', help='port number, default 5000')
@@ -16,6 +16,7 @@ if __name__ == "__main__":
 
     from project import app
     
+    print("You are in DEBUG mode! Don't use it as production!")
     # if you want to use 80, see: https://gist.github.com/justinmklam/f13bb53be9bb15ec182b4877c9e9958d
     app.run(host=args.host, port=args.port, debug=True)
 
