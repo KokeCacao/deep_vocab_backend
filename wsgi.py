@@ -1,4 +1,6 @@
-import argparse
+
+from project import app
+# import argparse
 
 # print("Parsing Arguments...")
 # parser = argparse.ArgumentParser(prog="python app.py", description="Launch backend of DeepVocab")
@@ -15,5 +17,4 @@ import argparse
 # args = parser.parse_args()
 
 if __name__ == "__main__":
-    from project import app
     app.run(host='0.0.0.0', port=5000, debug=False, ssl_context=('/etc/letsencrypt/live/kokecacao.me/cert.pem', '/etc/letsencrypt/live/kokecacao.me/privkey.pem'))
