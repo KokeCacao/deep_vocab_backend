@@ -11,7 +11,7 @@ parser.add_argument('--database', '-b', dest='database', default='/home/koke_cac
 parser.add_argument('--csv', '-c', dest='csv', default='/home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv', type=str, nargs='?', help='csv file location, default /home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv')
 
 parser.add_argument('--workers', '-w', dest='workers', default=2, help='compatible with gunicorn')
-parser.add_argument('--bind', '-b', dest='bind', default='0.0.0.0:5000', help='compatible with gunicorn')
+# parser.add_argument('--bind', '-b', dest='bind', default='0.0.0.0:5000', help='compatible with gunicorn')
 parser.add_argument('--certfile', dest='certfile', default='/etc/letsencrypt/live/kokecacao.me/cert.pem', help='compatible with gunicorn')
 parser.add_argument('--keyfile', dest='keyfile', default='/etc/letsencrypt/live/kokecacao.me/privkey.pem', help='compatible with gunicorn')
 
