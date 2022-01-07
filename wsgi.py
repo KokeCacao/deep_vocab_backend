@@ -15,6 +15,8 @@ from project import app
 # parser.add_argument('--keyfile', dest='keyfile', default='/etc/letsencrypt/live/kokecacao.me/privkey.pem', help='compatible with gunicorn')
 
 # args = parser.parse_args()
+# compatible with gunicorn (https://stackoverflow.com/questions/32802303/python-flask-gunicorn-error-unrecognized-arguments)
+# args, unknown = parser.parse_known_args()
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=False, ssl_context=('/etc/letsencrypt/live/kokecacao.me/cert.pem', '/etc/letsencrypt/live/kokecacao.me/privkey.pem'))

@@ -10,7 +10,9 @@ parser.add_argument('--host', dest='host', default='0.0.0.0', type=str, nargs='?
 parser.add_argument('--database', '-b', dest='database', default='/home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db', type=str, nargs='?', help='database file location, default /home/koke_cacao/Documents/Koke_Cacao/Database/deep_vocab.db')
 parser.add_argument('--csv', '-c', dest='csv', default='/home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv', type=str, nargs='?', help='csv file location, default /home/koke_cacao/Documents/Koke_Cacao/Python/WorkSpace/Barron3500/巴郎Sat3500-excel-original版(Linux).csv')
 
-args = parser.parse_args()
+# args = parser.parse_args()
+# compatible with gunicorn (https://stackoverflow.com/questions/32802303/python-flask-gunicorn-error-unrecognized-arguments)
+args, unknown = parser.parse_known_args()
 
 if __name__ == "__main__":
 
