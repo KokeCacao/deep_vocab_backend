@@ -1,5 +1,6 @@
 
 import argparse
+import eventlet
 
 print("Parsing Arguments...")
 parser = argparse.ArgumentParser(prog="python app.py", description="Launch backend of DeepVocab")
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     # if you want to use 80, see: https://gist.github.com/justinmklam/f13bb53be9bb15ec182b4877c9e9958d
     app.run(host=args.host, port=args.port, debug=True)
 else:
+    eventlet.monkey_patch()
     # override because we are running in wsgi
     # and we can't pass in params
     args.verbose = 0
