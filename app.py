@@ -15,12 +15,19 @@ parser.add_argument('--csv', '-c', dest='csv', default='/home/koke_cacao/Documen
 args, unknown = parser.parse_known_args()
 
 if __name__ == "__main__":
-
     from project import app
     
     print("You are in DEBUG mode! Don't use it as production!")
     # if you want to use 80, see: https://gist.github.com/justinmklam/f13bb53be9bb15ec182b4877c9e9958d
     app.run(host=args.host, port=args.port, debug=True)
+else:
+    # override because we are running in wsgi
+    # and we can't pass in params
+    args.verbose = 0
+    args.port = 5000
+    args.host = '0.0.0.0'
+    args.database = '/home/ubuntu/dev/database/deep_vocab.db'
+    args.csv = '/home/ubuntu/dev/database/data.csv'
 
 # TO RUN THIS PROJECT
 # > conda activate web
