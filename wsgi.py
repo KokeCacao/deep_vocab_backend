@@ -19,4 +19,4 @@ from project import app
 # args, unknown = parser.parse_known_args()
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=False, ssl_context=('/etc/letsencrypt/live/kokecacao.me/cert.pem', '/etc/letsencrypt/live/kokecacao.me/privkey.pem'))
+    app.run(host='0.0.0.0', port=5000, debug=False, ssl_context=('/etc/letsencrypt/live/kokecacao.me/fullchain.pem', '/etc/letsencrypt/live/kokecacao.me/privkey.pem'))
