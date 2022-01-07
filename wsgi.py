@@ -9,6 +9,11 @@ parser.add_argument('--verbose', '-v', dest='verbose', action='count', default=0
 parser.add_argument('--database', '-b', dest='database', default='/home/ubuntu/dev/database/deep_vocab.db', type=str, nargs='?', help='database file location, default /home/ubuntu/dev/database/deep_vocab.db')
 parser.add_argument('--csv', '-c', dest='csv', default='/home/ubuntu/dev/database/data.csv')
 
+parser.add_argument('--workers', '-w', dest='workers', default=2, help='compatible with gunicorn')
+parser.add_argument('--bind', '-b', dest='bind', default='0.0.0.0:5000', help='compatible with gunicorn')
+parser.add_argument('--certfile', dest='certfile', default='/etc/letsencrypt/live/kokecacao.me/cert.pem', help='compatible with gunicorn')
+parser.add_argument('--keyfile', dest='keyfile', default='/etc/letsencrypt/live/kokecacao.me/privkey.pem', help='compatible with gunicorn')
+
 args = parser.parse_args()
 
 if __name__ == "__main__":
