@@ -11,6 +11,7 @@ from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
 )
+from flask import current_app
 
 
 class ListDownloadMutation(graphene.Mutation):
@@ -77,7 +78,8 @@ class ListDownloadMutation(graphene.Mutation):
         mark_colorses = (mark_color_dict.get(vocab_id, [])
                          for vocab_id in vocab_ids)
 
-        print("[ListDownloadedMutation] Combing Vocab and UserVocab")
+
+        current_app.logger.info("[ListDownloadedMutation] Combing Vocab and UserVocab")
 
         # combine them
         combined = (VocabUserVocab().from_vocab_and_user_vocab(
@@ -86,8 +88,8 @@ class ListDownloadMutation(graphene.Mutation):
             mark_colors_list=mark_colors)
                     for vocab_db, user_vocab_db, mark_colors in zip(
                         vocab_dbs, user_vocab_dbs, mark_colorses))
-
-        print("[ListDownloadedMutation] Returning the data")
+        
+        current_app.logger.info("[ListDownloadedMutation] Returning the data")
         return ListDownloadMutation(header=VocabListHeader(
             name=header_data.get("name"),
             list_id=header_data.get("list_id"),

@@ -14,6 +14,7 @@ from flask_graphql_auth import (
     create_access_token,
     create_refresh_token,
 )
+from flask import current_app
 
 
 # TODO: email verification on user create account
@@ -54,6 +55,7 @@ class CreateUserMutation(graphene.Mutation):
             # check for verification code
             email_verification = kwargs["email_verification"]
 
+            # TODO: time should be longer, it does not seem by 10 min
             time = datetime.utcnow().timestamp()  # float where int part is sec
             time = int(time)
             time = int(time / 60 / 10)  # floor division by 10 minutes
@@ -67,6 +69,7 @@ class CreateUserMutation(graphene.Mutation):
                 time2))
 
             if (email_verification != code and email_verification != code2):
+                current_app.logger.info("email_verification {} is not {} or {}".format(email_verification, code, code2))
                 raise Exception(
                     "400|[Warning] invalid email verification code.")
 
@@ -111,7 +114,8 @@ class CreateUserMutation(graphene.Mutation):
             code = sha256_six_int("create={}/{}/{};time={}".format(
                 kwargs["email"], kwargs["user_name"], kwargs["password"],
                 time))
-            print("send create code = {}; time = {}".format(code, time))
+            
+            current_app.logger.info("send create code = {}; time = {}".format(code, time))
             send_verification(to=[to], code=code)
             return CreateUserMutation(uuid=None,
                                       access_token=None,
@@ -137,7 +141,8 @@ class CreateUserMutation(graphene.Mutation):
 
                 code = sha256_six_int("recover={}/{};time={}".format(
                     kwargs["email"], old_password, time))
-                print("send change code = {}; time = {}".format(code, time))
+
+                current_app.logger.info("send change code = {}; time = {}".format(code, time))
                 send_change_password(to=[to], code=code, debug=True)
                 return CreateUserMutation(uuid=None,
                                           access_token=None,

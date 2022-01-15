@@ -4,7 +4,7 @@ from sqlalchemy import exc
 from ..models.model import db
 from ..algorithm.vocab_database_creator import BarronDatabaseCreator
 from ..utils.util import send_verification
-
+from flask import current_app
 
 class TestMutation(graphene.Mutation):
     """
@@ -32,7 +32,7 @@ class TestMutation(graphene.Mutation):
             try:
                 db.session.commit()
             except exc.IntegrityError as e:
-                print("[SQL Error] " + e.detail)
+                current_app.logger.info("[SQL Error] " + e.detail)
                 return TestMutation(success=False)
             else:
                 return TestMutation(success=True)

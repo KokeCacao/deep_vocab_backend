@@ -3,7 +3,7 @@ import json
 from werkzeug.exceptions import InternalServerError
 from werkzeug.debug import get_current_traceback
 from . import app, schema
-from flask import Flask, Response, request, abort, render_template, current_app, send_from_directory
+from flask import Flask, Response, request, abort, render_template, current_app, send_from_directory, current_app
 from flask_graphql_auth import (
     get_jwt_identity,
     query_jwt_required,
@@ -32,7 +32,8 @@ def get_query(request):
     try:
         data = json.loads(
             request.data)  # turn unformatted json into json format
-        print(bcolors.BOLD + "[DEBUG] json = {}".format(data) + bcolors.ENDC)
+        
+        current_app.logger.info(bcolors.BOLD + "[DEBUG] json = {}".format(data) + bcolors.ENDC)
     except:
         raise Exception(
             "404|[Warning] Invalid Request, can't parse to json. request.data={}, len={}"
@@ -57,10 +58,9 @@ def parse_result(result):
         raise errors[0]
     error_message = None if status == 200 else errors[0].message.split("|")[1]
     if error_message != None:
-        print(bcolors.BOLD +
+        current_app.logger.info(bcolors.BOLD +
               "[DEBUG] error = {}, error code = {}, message = {}".format(
                   errors, status, error_message) + bcolors.ENDC)
-
     if result.data is None:
         error_message = "Invalid request"
         status = 404
@@ -173,17 +173,18 @@ def secure_download(**kwargs):
             }}""".format(uuid=kwargs["uuid"],
                          access_token=kwargs["access_token"],
                          list_id=kwargs["list_id"]))
-        print("[ListDownloadedMutation] start parsing result")
+        current_app.logger.info("[ListDownloadedMutation] start parsing result")
         extensions, invalid, to_dict, error_message, status = parse_result(
             result)
         # print("listDownload = {}".format(result.data["listDownload"]))
 
-        print("[ListDownloadedMutation] start dump result")
+        current_app.logger.info("[ListDownloadedMutation] start dump result")
         # json_result = json_dump(result.data, extensions, error_message)
         json_result = json_dump(result.data["listDownload"], None, None)
         # print("[DEBUG] result = {}".format(json_result))
 
-        print("[ListDownloadedMutation] returning")
+
+        current_app.logger.info("[ListDownloadedMutation] returning")
         # TODO: consider using generator, see: https://stackoverflow.com/questions/12166970/in-python-using-flask-how-can-i-write-out-an-object-for-download
         return Response(response=json_result,
                         status=status,

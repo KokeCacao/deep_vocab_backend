@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 
 from werkzeug.exceptions import InternalServerError
 from ..models.auth_model import AuthDB
+from flask import current_app
 
 
 def parse_kwargs(kwargs):
@@ -92,7 +93,7 @@ def send_verification(to=[], code="000000", debug=False):
     #     msg.add_attachment(pdf.read(), maintype='application', subtype='octet-stream', filename=pdf.name)
     try:
         if debug:
-            print(msg.as_string())
+            current_app.logger.info(msg.as_string())
         else:
             with smtplib.SMTP_SSL(server, port) as smtp:
                 smtp.ehlo()
@@ -136,7 +137,7 @@ def send_change_password(to=[], code="000000", debug=False):
 
     try:
         if debug:
-            print(msg.as_string())
+            current_app.logger.info(msg.as_string())
         else:
             with smtplib.SMTP_SSL(server, port) as smtp:
                 smtp.ehlo()

@@ -12,6 +12,7 @@ from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,
 )
+from flask import current_app
 
 
 class MarkColorMutation(graphene.Mutation):
@@ -134,12 +135,13 @@ class MarkColorMutation(graphene.Mutation):
             time_diff = 0.0 if last_mark_color_db == None else (
                 datetime.utcnow() - last_mark_color_db.time).total_seconds()
             long_term_mem_lost_by_time = 0.005 * time_diff
-            print("Your long_term_mem_lost_by_time is {}".format(
+
+            current_app.logger.info("Your long_term_mem_lost_by_time is {}".format(
                 long_term_mem_lost_by_time))
 
             # update long_term_mem by subtracting lost due to time before use it to calculate more
             long_term_mem = user_vocab_db.long_term_mem - long_term_mem_lost_by_time
-            print("Your long_term_mem before look at this vocab is {}".format(
+            current_app.logger.info("Your long_term_mem before look at this vocab is {}".format(
                 long_term_mem))
 
             # calculate short_term_mem before user look at the vocab
@@ -147,17 +149,17 @@ class MarkColorMutation(graphene.Mutation):
             short_term_mem_tmp = (mem_max - long_term_mem) * math.exp(
                 -(60.0 + time_diff) / mem_stability)
             short_term_mem = long_term_mem + short_term_mem_tmp
-            print("Your short_term_mem is {}".format(short_term_mem))
+            current_app.logger.info("Your short_term_mem is {}".format(short_term_mem))
 
             # now that the user looked at the vocab, update user's new long_term_mem
             # (mem_max - short_term_mem): as our short term memory decrease, the better we memorize
             # (2*long_term_mem_lost_by_time): but after a long long time, our memory basically start again, and long_term_mem should decrease
             long_term_mem = long_term_mem + (
                 mem_max - short_term_mem) / 16 - long_term_mem_lost_by_time
-            print("Your new long_term_mem is {}".format(long_term_mem))
+            current_app.logger.info("Your new long_term_mem is {}".format(long_term_mem))
             if (long_term_mem < 0):
                 long_term_mem = 0
-                print("You have fully forgot this vocab.")
+                current_app.logger.info("You have fully forgot this vocab.")
 
             # although mem_stability is not relevent, we use it as a predictor of the curve
             if desired_short_term_mem > long_term_mem:
@@ -171,9 +173,8 @@ class MarkColorMutation(graphene.Mutation):
 
             refresh_time = datetime.utcnow() + timedelta(
                 0, refresh_time_diff)  # days, seconds, then other fields.
-            print("We will update after {} seconds ({})".format(
+            current_app.logger.info("We will update after {} seconds ({})".format(
                 refresh_time_diff, refresh_time.isoformat()))
-
             return long_term_mem, refresh_time
 
         long_term_mem, refresh_time = get_LTM_and_refresh_time(
