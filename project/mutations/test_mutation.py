@@ -6,6 +6,7 @@ from ..algorithm.vocab_database_creator import BarronDatabaseCreator
 from ..utils.util import send_verification
 from flask import current_app
 
+
 class TestMutation(graphene.Mutation):
     """
     mutation {
@@ -13,10 +14,18 @@ class TestMutation(graphene.Mutation):
             success
         }
     }
+    mutation {
+        test(key: "Koke_Cacao 's secret key", action: "create user", userName: "", email: "", password: "") {
+            success
+        }
+    }
     """
     class Arguments:
         key = graphene.String(required=True)
         action = graphene.String(required=True)
+        email = graphene.String(required=False)
+        user_name = graphene.String(required=False)
+        password = graphene.String(required=False)
 
     success = graphene.Boolean()
 
@@ -66,7 +75,31 @@ class TestMutation(graphene.Mutation):
             send_verification(to=["su.chen.hanke@gmail.com"],
                               code="000000",
                               debug=True)
+        elif action == "create user":
+            from ..models.auth_model import AuthDB
+            from ..models.user_model import UserDB
+            import uuid as UUID
+            uuid = str(UUID.uuid4())
+            AuthDB.add(
+                uuid=uuid,
+                email=kwargs["email"],
+                user_name=kwargs["user_name"],
+                password=kwargs["password"],
+            )
+            UserDB.add(
+                uuid=uuid,
+                user_name=kwargs["user_name"],
+            )
+
+            try:
+                db.session.commit()
+                print("User {} created: password = {}, email = {}".format(
+                    kwargs["user_name"], kwargs["password"], kwargs["email"]))
+                return TestMutation(success=True)
+            except exc.IntegrityError:
+                print("400|[Warning] user_name or email already exists.")
+                return TestMutation(success=False)
 
         else:
             raise Exception("400|Invalid Action")
-        return TestMutation(success=True)
+        return TestMutation(success=False)

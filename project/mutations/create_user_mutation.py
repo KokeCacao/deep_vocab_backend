@@ -96,7 +96,7 @@ class CreateUserMutation(graphene.Mutation):
                                       access_token=create_access_token(uuid),
                                       refresh_token=create_refresh_token(uuid))
 
-        # request email verification when registeration
+        # request email verification when registration
         elif ("email_verification" not in kwargs and "user_name" in kwargs
               and "email" in kwargs and "password" in kwargs):
             if AuthDB.get_by_email(kwargs["email"]) != None:
