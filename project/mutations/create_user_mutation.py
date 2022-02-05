@@ -143,7 +143,7 @@ class CreateUserMutation(graphene.Mutation):
                     kwargs["email"], old_password, time))
 
                 current_app.logger.info("send change code = {}; time = {}".format(code, time))
-                send_change_password(to=[to], code=code, debug=True)
+                send_change_password(to=[to], code=code)
                 return CreateUserMutation(uuid=None,
                                           access_token=None,
                                           refresh_token=None)
