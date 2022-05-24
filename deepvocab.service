@@ -1,0 +1,10 @@
+[Unit]
+Description=DeepVocab Backend Server
+After=network-up.target
+
+[Service]
+WorkingDirectory=/home/ubuntu/dev/deep_vocab_backend
+ExecStart=zsh ./run.sh
+
+[Install]
+WantedBy=multi-user.target
