@@ -63,5 +63,5 @@ then
     sudo systemctl restart deepvocab
 fi
 
-echo "You are good to go. Please make sure to create a `.env` file following the installation instruction before running."
+echo "You are good to go. Please make sure to create a .env file following the installation instruction before running."
 exit 0
