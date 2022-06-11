@@ -1,7 +1,7 @@
 import graphene
 
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
-from ..models.model import db
+from database import db
 from ..models.user_model import UserDB
 from werkzeug.exceptions import InternalServerError
 from flask_graphql_auth import (

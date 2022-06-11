@@ -3,7 +3,8 @@ import graphene
 import math
 
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
-from ..models.model import db, ColorModel
+from database import db
+from ..models.model import ColorModel
 from ..models.mark_color_model import MarkColorDB
 from ..models.user_vocab_model import UserVocabDB
 

@@ -2,7 +2,7 @@ import graphene
 
 from werkzeug.exceptions import InternalServerError
 from ..utils.util import parse_kwargs, check_jwt_with_uuid
-from ..models.model import db
+from database import db
 from ..models.user_vocab_model import UserVocabDB
 from ..models.user_model import UserDB
 

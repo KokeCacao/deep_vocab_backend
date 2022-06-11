@@ -5,7 +5,7 @@ from werkzeug.exceptions import InternalServerError
 
 from ..models.auth_model import AuthDB
 from ..utils.util import parse_kwargs, sha256_six_int, send_verification, send_change_password
-from ..models.model import db
+from database import db
 from ..models.user_model import UserDB
 
 from datetime import datetime

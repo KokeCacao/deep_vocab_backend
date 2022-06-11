@@ -1,6 +1,5 @@
 import graphene
 
-from .models.auth_model import Auth
 from .mutations.test_mutation import TestMutation
 from .mutations.auth_mutation import AuthMutation
 from .mutations.user_mutation import UserMutation
@@ -10,7 +9,7 @@ from .mutations.mark_color_mutation import MarkColorMutation
 from .mutations.user_vocab_mutation import UserVocabMutation
 from .mutations.refresh_vocabs_mutation import RefreshVocabMutation
 from .mutations.list_download_mutation import ListDownloadMutation
-from project.mutations.upload_mutation import UploadMutation
+from .mutations.upload_mutation import UploadMutation
 
 
 # ...: means input with selection from all other variables

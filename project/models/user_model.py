@@ -1,5 +1,5 @@
 from werkzeug.exceptions import InternalServerError
-from .model import db
+from database import db
 
 
 class UserDB(db.Model):

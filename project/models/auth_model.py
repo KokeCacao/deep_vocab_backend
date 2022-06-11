@@ -1,6 +1,6 @@
 import graphene
 from werkzeug.exceptions import InternalServerError
-from .model import db
+from database import db
 
 
 class Auth(graphene.ObjectType):

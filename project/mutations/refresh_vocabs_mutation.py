@@ -5,7 +5,8 @@ from ..models.mark_color_model import ColorModel, MarkColorDB
 from ..models.vocab_model import VocabDB
 from ..models.mark_color_model import MarkColorDB
 from ..models.user_vocab_model import UserVocabDB
-from ..models.model import db, Vocab
+from database import db
+from ..models.model import Vocab
 from flask_graphql_auth import (
     get_jwt_identity,
     mutation_jwt_required,

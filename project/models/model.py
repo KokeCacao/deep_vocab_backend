@@ -1,28 +1,5 @@
 # database stuff
-from flask_sqlalchemy import SQLAlchemy  # instead of `from flask.ext.sqlalchemy import SQLAlchemy`
-from app import args  # app here refers to app.py, but Flask()
-from .. import app
-
-
-class SQLiteAlchemy(SQLAlchemy):
-    def apply_driver_hacks(self, app, info, options):
-        options.update({'echo': False})
-        super(SQLiteAlchemy, self).apply_driver_hacks(app, info, options)
-
-
-# database stuff
-# 'sqlite:///:memory:' for memory db
-print("App Config and Init SQLAlchemy...")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + args.database
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-# Difference Between Plain SQLAlchemy and FlaskSQLiteAlchemy
-# https://flask-sqlalchemy.palletsprojects.com/en/2.x/quickstart/#road-to-enlightenment
-# Contextual/Thread-local Sessions: https://docs.sqlalchemy.org/en/14/orm/contextual.html
-# You have to commit the session, but you don’t have to remove it at the end of the request, Flask-SQLAlchemy does that for you.
-# SQLAlchemy gives you a preconfigured scoped session called session
-db = SQLiteAlchemy(app, session_options={'autocommit': False})
-db.init_app(app)
+from flask_sqlalchemy import SQLAlchemy
 
 # see https://stackoverflow.com/questions/46540664/no-application-found-either-work-inside-a-view-function-or-push-an-application
 # This line should be put after all database models

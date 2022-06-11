@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.sql.expression import or_
 from werkzeug.exceptions import InternalServerError
-from .model import db
+from database import db
 
 
 class UserVocabDB(db.Model):

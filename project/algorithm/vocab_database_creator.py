@@ -1,6 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
-from app import args  # app here refers to app.py, but Flask()
+from database import args  # app here refers to app.py, but Flask()
 
 from ..models.vocab_model import VocabDB, TypeModel
 from datetime import datetime

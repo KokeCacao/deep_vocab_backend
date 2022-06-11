@@ -1,7 +1,7 @@
 import graphene
 from sqlalchemy import exc
 
-from ..models.model import db
+from database import db
 from ..algorithm.vocab_database_creator import BarronDatabaseCreator
 from ..utils.util import send_verification
 from flask import current_app

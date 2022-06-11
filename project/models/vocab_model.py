@@ -2,7 +2,8 @@ from sqlalchemy.sql.expression import or_
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy import PickleType
 
-from .model import db, TypeModel
+from database import db
+from .model import TypeModel
 
 
 class VocabDB(db.Model):

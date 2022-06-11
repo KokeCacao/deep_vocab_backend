@@ -1,5 +1,6 @@
 from werkzeug.exceptions import InternalServerError
-from .model import db, ColorModel
+from database import db
+from .model import ColorModel
 
 
 class MarkColorDB(db.Model):
