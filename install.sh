@@ -1,16 +1,18 @@
 #!/usr/bin/bash
+cd "$(dirname "$0")"
 
 read -p "Do you have conda installed? (y/N) " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     echo "Your conda path is: " && which conda
+    eval "$(conda shell.bash hook)" && conda --help
 else
     echo "Please install conda first."
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
-read -p "Have you added conda-forge? (y/N)" -n 1 -r
+read -p "Have you added conda-forge? If not I will add it for you and set priority to flexible. (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -18,30 +20,44 @@ then
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
-read -p "Are you currently in deepvocab environment? (y/N)" -n 1 -r
+read -p "Are you currently in deepvocab environment? If so I will deactivate it. (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     conda deactivate
 fi
 
-conda remove --name deepvocab --all
-
-conda create --name deepvocab python=3.10.4 -c conda-forge -y && \
-conda activate deepvocab && \
-conda list
-
-conda install "flask>=2.1.2" eventlet flask-graphql flask-testing aniso8601 "PyJWT=2.0.1" graphql-relay graphene pandas tqdm python-dotenv && \
-pip install flask-graphql-auth graphene-file-upload && \
-conda install -c conda-forge flask-sqlalchemy
-
-conda activate web
-
-read -p "Do you want me to set up service? Choose no if you are not on Linux system. (y/N)" -n 1 -r
+read -p "Should I remove deepvocab environment and do a clean installation? (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    sudo cp /home/ubuntu/dev/deep_vocab_backend/deepvocab.service /etc/systemd/system/deepvocab.service && \
+    conda remove --name deepvocab --all
+fi
+
+read -p "I will create a new deepvocab environment using `conda create`? (y/N)" -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    conda create --name deepvocab python=3.10.4 -c conda-forge -y
+fi
+
+conda activate deepvocab && \
+conda list
+
+read -p "I will install dependencies using conda and pip. Proceed? (y/N)" -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    conda install "flask>=2.1.2" eventlet flask-graphql flask-testing aniso8601 "PyJWT=2.0.1" graphql-relay graphene pandas tqdm python-dotenv && \
+    pip install flask-graphql-auth graphene-file-upload && \
+    conda install -c conda-forge flask-sqlalchemy
+fi
+
+read -p "Do you want me to set up service? Choose no if you are not on Linux system or you are not running a server. (y/N)" -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    sudo cp ./deepvocab.service /etc/systemd/system/deepvocab.service && \
     sudo systemctl daemon-reload && \
     sudo systemctl enable deepvocab && \
     sudo systemctl restart deepvocab
