@@ -2,9 +2,9 @@
 
 read -p "Do you have conda installed? (y/N) " -n 1 -r
 echo    # (optional) move to a new line
-if [[ ! $REPLY =~ ^[Yy]$ ]]
+if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    which conda
+    echo "Your conda path is: " && which conda
 else
     echo "Please install conda first."
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
@@ -12,7 +12,7 @@ fi
 
 read -p "Have you added conda-forge? (y/N)" -n 1 -r
 echo    # (optional) move to a new line
-if [[ ! $REPLY =~ ^[Yy]$ ]]
+if [[ $REPLY =~ ^[Yy]$ ]]
 then
     conda config --add channels conda-forge && conda config --set channel_priority flexible && echo "Please start a new shell and run the script again."
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
