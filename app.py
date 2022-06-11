@@ -1,3 +1,4 @@
+from sre_constants import SUCCESS
 import eventlet
 import datetime
 import graphene
@@ -161,7 +162,7 @@ def json_dump(data,
 
 @app.route("/test", methods=["POST"])
 def test():
-    return 200
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 @app.route("/graphql", methods=["POST"])
 def graphql():
