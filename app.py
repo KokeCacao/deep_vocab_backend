@@ -12,7 +12,7 @@ from flask_graphql_auth import (
 )
 
 from werkzeug.exceptions import InternalServerError
-from database import args, db
+from database import db
 from project.query import Query
 from project.mutation import Mutation
 
@@ -33,28 +33,13 @@ app = Flask(__name__)
 schema = graphene.Schema(query=Query, mutation=Mutation, auto_camelcase=True)
 
 def init_app():
-    # file download stuff
-    app.config['DOWNLOAD_FOLDER'] = "download/"
-    app.config['UPLOAD_FOLDER'] = "upload/"
-
-    # flask-JWT stuff
-    app.config["JWT_SECRET_KEY"] = "DeepVocab: coded by Koke_Cacao on 2021/01/01. Yah, this was how I spend my new year. 许愿有个女朋友".encode("utf-8")
-    app.config["JWT_TOKEN_ARGUMENT_NAME"] = "access_token"
-    app.config["JWT_ERROR"] = "jwt_error"
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = datetime.timedelta(minutes=1)
-    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = datetime.timedelta(days=30 * 12 * 4)
-    auth = GraphQLAuth(app)
-    return auth
+    print("Init GraphQLAuth...")
+    return GraphQLAuth(app)
 
 def init_database():
     # importing order matters: https://stackoverflow.com/questions/11720898/flask-sqlalchemy-relationships-between-different-modules
     with app.app_context():
-        # database stuff
-        # 'sqlite:///:memory:' for memory db
-        print("App Config and Init SQLAlchemy...")
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + args.database
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-        app.config['SQLALCHEMY_ECHO'] = False
+        print("Init SQLAlchemy...")
 
         # Difference Between Plain SQLAlchemy and FlaskSQLiteAlchemy
         # https://flask-sqlalchemy.palletsprojects.com/en/2.x/quickstart/#road-to-enlightenment
@@ -63,8 +48,46 @@ def init_database():
         # SQLAlchemy gives you a preconfigured scoped session called session
         db.init_app(app)
 
+        # see https://stackoverflow.com/questions/46540664/no-application-found-either-work-inside-a-view-function-or-push-an-application
+        # This line should be put after all database models initialized.
+        # It is fine to be here because of import chains [app.py -> project.mutation/query -> models]
         print("Creating Database...")
         db.create_all()
+
+# LOAD ARGUMENT
+print("Parsing Arguments...")
+import argparse
+parser = argparse.ArgumentParser(prog="python app.py", description="Launch backend of DeepVocab")
+parser.add_argument('--version', action='version', version='%(prog)s v0.1')
+# parser.add_argument('--verbose', '-v', dest='verbose', action='count', default=0) # -vvv
+parser.add_argument('--port', '-p', dest='port', default=5000, type=int, nargs='?', help='port number, default 5000')
+parser.add_argument('--host', dest='host', default='0.0.0.0', type=str, nargs='?', help='host address, default 0.0.0.0')
+# args = parser.parse_args()
+# compatible with gunicorn (https://stackoverflow.com/questions/32802303/python-flask-gunicorn-error-unrecognized-arguments)
+args, unknown = parser.parse_known_args()
+print(vars(args))
+
+# LOAD .ENV
+print("Parsing .env...")
+import os
+from dotenv import load_dotenv
+load_dotenv()
+app.config["FLASK_APP"] = os.getenv("FLASK_APP")
+app.config["DOWNLOAD_FOLDER"] = os.getenv("DOWNLOAD_FOLDER")
+app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER")
+app.config["CSV_PATH"] = os.getenv("CSV_PATH")
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_TOKEN_ARGUMENT_NAME"] = os.getenv("JWT_TOKEN_ARGUMENT_NAME")
+app.config["JWT_ERROR"] = os.getenv("JWT_ERROR")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = os.getenv("JWT_ACCESS_TOKEN_EXPIRES")
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = os.getenv("JWT_REFRESH_TOKEN_EXPIRES")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS") == 'True'
+app.config["SQLALCHEMY_ECHO"] = os.getenv("SQLALCHEMY_ECHO") == 'True'
+app.config["FULL_CHAIN"] = os.getenv("FULL_CHAIN")
+app.config["PRIVATE_KEY"] = os.getenv("PRIVATE_KEY")
+print(app.config)
+ssl_context=(app.config["FULL_CHAIN"], app.config["PRIVATE_KEY"]) if app.config["FULL_CHAIN"] is not None and app.config["PRIVATE_KEY"] is not None else None
 
 auth = init_app()
 init_database()
@@ -243,19 +266,12 @@ def secure_download(**kwargs):
 
 if __name__ == "__main__":
     print(bcolors.WARNING + "You are in DEBUG mode! Don't use it as production!")
-    print(vars(args))
     print(bcolors.ENDC)
-    # if you want to use 80, see: https://gist.github.com/justinmklam/f13bb53be9bb15ec182b4877c9e9958d
-    app.run(host=args.host, port=args.port, debug=True) # this line must execute after @app.route
+    # if you want to use 80, see: https://gist.github.com/ejustinmklam/f13bb53be9bb15ec182b4877c9e9958d
+    # load_dotenv=False because we want to load earlier than this
+    app.run(host=args.host, port=args.port, debug=True, load_dotenv=False, ssl_context=ssl_context) # this line must execute after @app.route
 else:
     eventlet.monkey_patch()
-    # override because we are running in wsgi
-    # and we can't pass in params
-    args.verbose = 0
-    args.port = 5000
-    args.host = '0.0.0.0'
-    args.database = '/home/ubuntu/dev/database/deep_vocab.db'
-    args.csv = '/home/ubuntu/dev/database/data.csv'
     print(bcolors.WARNING + "You are in PRODUCTION mode! Make sure you have correct URIs.")
-    print(vars(args))
     print(bcolors.ENDC)
+    # app.run will be execute in wsgi.py

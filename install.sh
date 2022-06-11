@@ -1,5 +1,15 @@
 #!/usr/bin/zsh
 
+read -p "Do you have conda installed? " -n 1 -r
+echo    # (optional) move to a new line
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    which conda
+else
+    echo "Please install conda first."
+    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
+fi
+
 read -p "Have you added conda-forge " -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -21,7 +31,7 @@ conda create --name deepvocab python=3.10.4 -c conda-forge -y && \
 conda activate deepvocab && \
 conda list
 
-conda install "flask>=2.1.2" eventlet flask-graphql flask-testing aniso8601 "PyJWT=2.0.1" graphql-relay graphene pandas tqdm && \
+conda install "flask>=2.1.2" eventlet flask-graphql flask-testing aniso8601 "PyJWT=2.0.1" graphql-relay graphene pandas tqdm python-dotenv && \
 pip install flask-graphql-auth graphene-file-upload && \
 conda install -c conda-forge flask-sqlalchemy
 
@@ -37,4 +47,5 @@ then
     sudo systemctl restart deepvocab
 fi
 
-echo "You are good to go."
+echo "You are good to go. Please make sure to create a `.env` file following the installation instruction before running."
+exit 0

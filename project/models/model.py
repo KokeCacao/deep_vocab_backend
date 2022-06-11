@@ -1,15 +1,5 @@
-# database stuff
-from flask_sqlalchemy import SQLAlchemy
-
-# see https://stackoverflow.com/questions/46540664/no-application-found-either-work-inside-a-view-function-or-push-an-application
-# This line should be put after all database models
-# with app.app_context():
-#     print("Creating Database...")
-#     db.create_all()
-
 import graphene
 import enum
-
 
 class ColorModel(enum.Enum):
     black = "black"
