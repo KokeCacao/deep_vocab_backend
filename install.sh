@@ -1,6 +1,6 @@
-#!/usr/bin/zsh
+#!/usr/bin/bash
 
-read -p "Do you have conda installed? " -n 1 -r
+read -p "Do you have conda installed? (y/N) " -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
@@ -10,15 +10,15 @@ else
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
-read -p "Have you added conda-forge " -n 1 -r
+read -p "Have you added conda-forge? (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
-    conda config --add channels conda-forge && onda config --set channel_priority flexible && echo "Please start a new shell and run the script again."
+    conda config --add channels conda-forge && conda config --set channel_priority flexible && echo "Please start a new shell and run the script again."
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
-read -p "Are you currently in deepvocab environment? " -n 1 -r
+read -p "Are you currently in deepvocab environment? (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -37,7 +37,7 @@ conda install -c conda-forge flask-sqlalchemy
 
 conda activate web
 
-read -p "Do you want me to set up service? Choose no if you are not on Linux system. " -n 1 -r
+read -p "Do you want me to set up service? Choose no if you are not on Linux system. (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
