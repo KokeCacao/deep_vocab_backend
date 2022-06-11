@@ -12,9 +12,9 @@ else
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
 fi
 
-read -p "Have you added conda-forge? If not I will add it for you and set priority to flexible. (y/N)" -n 1 -r
+read -p "Have you added conda-forge? If not I will add it for you and set priority to flexible. (Y/n)" -n 1 -r
 echo    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]
+if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     conda config --add channels conda-forge && conda config --set channel_priority flexible && echo "Please start a new shell and run the script again."
     [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
@@ -34,11 +34,11 @@ then
     conda remove --name deepvocab --all
 fi
 
-read -p "I will create a new deepvocab environment using `conda create`? (y/N)" -n 1 -r
+read -p "I will create a new deepvocab environment using conda create? (y/N)" -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    conda create --name deepvocab python=3.10.4 -c conda-forge -y
+    conda create --name deepvocab python=3.10.4 -c conda-forge
 fi
 
 conda activate deepvocab && \
