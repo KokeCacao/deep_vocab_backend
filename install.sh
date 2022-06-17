@@ -38,7 +38,7 @@ read -p "I will create a new deepvocab environment using conda create? (y/N)" -n
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    conda create --name deepvocab python=3.10.4 -c conda-forge
+    conda create --name deepvocab python=3.9 -c conda-forge
 fi
 
 conda activate deepvocab && \
@@ -48,9 +48,17 @@ read -p "I will install dependencies using conda and pip. Proceed? (y/N)" -n 1 -
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    conda install "flask>=2.1.2" eventlet flask-graphql flask-testing aniso8601 "PyJWT=2.0.1" graphql-relay graphene pandas tqdm python-dotenv && \
+    conda install "flask>=2.1.2" flask-graphql flask-testing aniso8601 "PyJWT=2.0.1" graphql-relay graphene pandas tqdm python-dotenv && \
     pip install flask-graphql-auth graphene-file-upload && \
-    conda install -c conda-forge flask-sqlalchemy
+    conda install -c conda-forge flask-sqlalchemy && \
+    pip install "gunicorn==20.1.0" "eventlet==0.33.1" setuptools six greenlet dnspython
+fi
+
+read -p "Since eventlet==0.33.1 is not compatible (https://github.com/eventlet/eventlet/issues/733) with python 3.10, so we need to install a dev version of eventlet. Can I do that?" -n 1 -r
+echo    # (optional) move to a new line
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+    pip install https://github.com/eventlet/eventlet/archive/master.zip
 fi
 
 read -p "Do you want me to set up service? Choose no if you are not on Linux system or you are not running a server. (y/N)" -n 1 -r
