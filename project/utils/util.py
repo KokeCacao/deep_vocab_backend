@@ -77,7 +77,7 @@ def send_verification(to=[], code="000000", debug=False):
     msg['From'] = "{name} <{from_mail}>".format(name="Deep Vocab",
                                                 from_mail=user)
     msg['To'] = ", ".join(to)
-    msg['Subject'] = "Your Verification Code for Registeration"
+    msg['Subject'] = "[DeepVocab] {} is Your Verification Code for Registration".format(code)
     msg['Date'] = email.utils.formatdate(localtime=True)
     msg['Accept-Language'] = 'en-US'
     msg['Content-Language'] = 'en-US'
@@ -104,7 +104,7 @@ def send_verification(to=[], code="000000", debug=False):
     return True
 
 
-def send_change_password(to=[], code="000000", debug=False):
+def send_change_password(to=[], code="000000", debug=False, minutes=10):
     # login info
     server = "smtp.qq.com"
     port = 465
@@ -127,7 +127,7 @@ def send_change_password(to=[], code="000000", debug=False):
     msg['From'] = "{name} <{from_mail}>".format(name="Deep Vocab",
                                                 from_mail=user)
     msg['To'] = ", ".join(to)
-    msg['Subject'] = "Your Verification Code for Recover Password"
+    msg['Subject'] = "[DeepVocab] {} is Your Verification Code for Recover Password".format(code)
     msg['Date'] = email.utils.formatdate(localtime=True)
     msg['Accept-Language'] = 'en-US'
     msg['Content-Language'] = 'en-US'
