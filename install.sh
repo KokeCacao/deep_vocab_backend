@@ -64,7 +64,8 @@ esac
 done
 
 conda activate deepvocab && \
-conda list
+conda list && \
+echo "Above is your current packages"
 
 while true; do
 read -p "I will install dependencies using conda and pip. Proceed? (y/n) " yn
@@ -101,7 +102,7 @@ case $yn in
     sudo nginx -t && \
     sudo cp -i ./deepvocab.conf /etc/nginx/sites-available/deepvocab.conf && \
     echo "Successfully copied configuration to '/etc/nginx/sites-available/deepvocab.conf'" && \
-    sudo ln -s /etc/nginx/sites-available/deepvocab.conf /etc/nginx/sites-enabled/ && \
+    sudo ln -i -s /etc/nginx/sites-available/deepvocab.conf /etc/nginx/sites-enabled/ && \
     echo "Successfully linked configuration to '/etc/nginx/sites-enabled/'" && \
     sudo nginx -t && \
     sudo nginx -s reload
@@ -142,6 +143,7 @@ case $yn in
       [yY] )
         sudo cp -i ./deepvocab.service /etc/systemd/system/deepvocab.service && \
         sudo systemctl daemon-reload && \
+        sudo chown -R www-data:www-data /home/ubuntu/dev/deep_vocab_backend && \
         sudo systemctl enable deepvocab && \
         sudo systemctl restart deepvocab
         break;;
@@ -157,5 +159,19 @@ case $yn in
 esac
 done
 
-echo "You are good to go. Please make sure to create a '.env' file following the installation instruction before running."
+echo "You are good to go. Please make sure to create a '.env' file and get the '.csv' vocab list following the installation instruction before running."
+
+
+while true; do
+read -p "Check the status of deepvocab service? (y/n) " yn
+case $yn in 
+  [yY] )
+    sudo systemctl status deepvocab
+    break;;
+  [nN] )
+    break;;
+  * ) echo "Invalid Response";;
+esac
+done
+
 exit 0
