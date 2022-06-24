@@ -85,10 +85,14 @@ class GraphQLAuth(object):
 
         if token_type == "refresh":
             exp = current_app.config["JWT_REFRESH_TOKEN_EXPIRES"]
+            if isinstance(exp, str):
+                exp = int(exp)
             if isinstance(exp, int):
                 exp = datetime.timedelta(days=exp)
         else:
             exp = current_app.config["JWT_ACCESS_TOKEN_EXPIRES"]
+            if isinstance(exp, str):
+                exp = int(exp)
             if isinstance(exp, int):
                 exp = datetime.timedelta(minutes=exp)
 
