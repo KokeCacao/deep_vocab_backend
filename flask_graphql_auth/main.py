@@ -88,13 +88,13 @@ class GraphQLAuth(object):
             if isinstance(exp, str):
                 exp = int(exp)
             if isinstance(exp, int):
-                exp = datetime.timedelta(days=exp)
+                exp = datetime.timedelta(seconds=exp)
         else:
             exp = current_app.config["JWT_ACCESS_TOKEN_EXPIRES"]
             if isinstance(exp, str):
                 exp = int(exp)
             if isinstance(exp, int):
-                exp = datetime.timedelta(minutes=exp)
+                exp = datetime.timedelta(seconds=exp)
 
         token_data.update({"exp": now + exp})
 
