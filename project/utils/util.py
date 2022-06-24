@@ -106,10 +106,10 @@ def send_verification(to=[], code="000000", debug=False):
 
 def send_change_password(to=[], code="000000", debug=False, minutes=10):
     # login info
-    server = "smtp.qq.com"
-    port = 465
-    user = "i@kokecacao.me"
-    password = "hxgttnbbvzrcffjh"
+    server = current_app.config["SMTP_SERVER"]
+    port = current_app.config["SMTP_PORT"]
+    user = current_app.config["SMTP_USER"]
+    password = current_app.config["SMTP_PASSWORD"]
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     dir_path = dir_path.split("/project")[0]  # should be ~/deep_vocab

@@ -74,19 +74,25 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 app.config["FLASK_APP"] = os.getenv("FLASK_APP")
+app.config["BACKEND_SECRET_KEY"] = os.getenv("BACKEND_SECRET_KEY")
 app.config["DOWNLOAD_FOLDER"] = os.getenv("DOWNLOAD_FOLDER")
 app.config["UPLOAD_FOLDER"] = os.getenv("UPLOAD_FOLDER")
 app.config["CSV_PATH"] = os.getenv("CSV_PATH")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["JWT_TOKEN_ARGUMENT_NAME"] = os.getenv("JWT_TOKEN_ARGUMENT_NAME")
 app.config["JWT_ERROR"] = os.getenv("JWT_ERROR")
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = os.getenv("JWT_ACCESS_TOKEN_EXPIRES")
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = os.getenv("JWT_REFRESH_TOKEN_EXPIRES")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES"))
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRES"))
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = os.getenv("SQLALCHEMY_TRACK_MODIFICATIONS") == 'True'
 app.config["SQLALCHEMY_ECHO"] = os.getenv("SQLALCHEMY_ECHO") == 'True'
 app.config["FULL_CHAIN"] = os.getenv("FULL_CHAIN")
 app.config["PRIVATE_KEY"] = os.getenv("PRIVATE_KEY")
+app.config["SMTP_SERVER"] = os.getenv("SMTP_SERVER")
+app.config["SMTP_PORT"] = int(os.getenv("SMTP_PORT"))
+app.config["SMTP_USER"] = os.getenv("SMTP_USER")
+app.config["SMTP_PASSWORD"] = os.getenv("SMTP_PASSWORD")
+
 print(app.config)
 ssl_context=(app.config["FULL_CHAIN"], app.config["PRIVATE_KEY"]) if app.config["FULL_CHAIN"] is not None and app.config["PRIVATE_KEY"] is not None else None
 

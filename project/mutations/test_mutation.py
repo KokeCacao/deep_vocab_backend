@@ -10,12 +10,12 @@ from flask import current_app
 class TestMutation(graphene.Mutation):
     """
     mutation {
-        test(key: "Koke_Cacao 's secret key", action: "add to db") {
+        test(key: "Koke_Cacao-secret-key", action: "add to db") {
             success
         }
     }
     mutation {
-        test(key: "Koke_Cacao 's secret key", action: "create user", userName: "", email: "", password: "") {
+        test(key: "Koke_Cacao-secret-key", action: "create user", userName: "", email: "", password: "") {
             success
         }
     }
@@ -34,7 +34,7 @@ class TestMutation(graphene.Mutation):
         key = kwargs["key"]
         action = kwargs["action"]
 
-        if key != "Koke_Cacao 's secret key":
+        if key != current_app.config["BACKEND_SECRET_KEY"]:
             raise Exception("400|Invalid Key")
         if action == "add to db":
             BarronDatabaseCreator().add_barron_to_database()
