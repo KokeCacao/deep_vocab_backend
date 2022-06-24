@@ -159,7 +159,7 @@ case $yn in
 esac
 done
 
-echo "You are good to go. Please make sure to create a '.env' file and get the '.csv' vocab list following the installation instruction before running."
+echo "You are good to go. Please make sure to create a '.env' file and get the '.csv' vocab list following the installation instruction before running. Also do not forget to do both chown www-data:www-data [path-of-database] and chown -R www-data:www-data [path-of-database-directory]"
 
 
 while true; do
