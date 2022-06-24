@@ -1,10 +1,10 @@
 import graphene
 from sqlalchemy import exc
+from flask import current_app
 
 from database import db
 from ..algorithm.vocab_database_creator import BarronDatabaseCreator
-from ..utils.util import send_verification
-from flask import current_app
+from ..utils.util import send_verification, sha256
 
 
 class TestMutation(graphene.Mutation):
@@ -79,7 +79,11 @@ class TestMutation(graphene.Mutation):
             from ..models.auth_model import AuthDB
             from ..models.user_model import UserDB
             import uuid as UUID
+
             uuid = str(UUID.uuid4())
+            # This is to simulate client side encryption
+            kwargs["password"] = sha256(kwargs["password"])
+
             AuthDB.add(
                 uuid=uuid,
                 email=kwargs["email"],
