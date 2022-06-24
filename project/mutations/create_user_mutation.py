@@ -61,7 +61,7 @@ class CreateUserMutation(graphene.Mutation):
             time = datetime.utcnow().timestamp()  # float where int part is sec
             time = int(time)
             time = int(time / 60 / MINUTES)  # floor division by 10 minutes
-            time2 = time + 1
+            time2 = time - 1
 
             code = sha256_six_int("create={}/{}/{};time={}".format(
                 kwargs["email"], kwargs["user_name"], kwargs["password"],
@@ -164,7 +164,7 @@ class CreateUserMutation(graphene.Mutation):
             time = datetime.utcnow().timestamp()  # float where int part is sec
             time = int(time)
             time = int(time / 60 / MINUTES)  # floor division by 10 minutes
-            time2 = time + 1
+            time2 = time - 1
 
             code = sha256_six_int("recover={}/{};time={}".format(
                 kwargs["email"], old_password, time))
@@ -192,7 +192,7 @@ class CreateUserMutation(graphene.Mutation):
             time = datetime.utcnow().timestamp()  # float where int part is sec
             time = int(time)
             time = int(time / 60 / MINUTES)  # floor division by 10 minutes
-            time2 = time + 1
+            time2 = time - 1
 
             code = sha256_six_int("recover={}/{};time={}".format(
                 kwargs["email"], old_password, time))
