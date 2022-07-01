@@ -31,6 +31,8 @@ class TestMutation(graphene.Mutation):
 
     @staticmethod
     def mutate(parent, info, **kwargs):
+        # This is to simulate client side encryption
+        kwargs["password"] = sha256(kwargs["password"])
         kwargs = parse_kwargs(kwargs)
         key = kwargs["key"]
         action = kwargs["action"]
@@ -82,8 +84,6 @@ class TestMutation(graphene.Mutation):
             import uuid as UUID
 
             uuid = str(UUID.uuid4())
-            # This is to simulate client side encryption
-            kwargs["password"] = sha256(kwargs["password"])
 
             AuthDB.add(
                 uuid=uuid,
