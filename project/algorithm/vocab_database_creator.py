@@ -5,6 +5,7 @@ from tqdm import tqdm
 from ..models.vocab_model import VocabDB, TypeModel
 from datetime import datetime
 from flask import current_app
+from dotenv import load_dotenv
 
 
 def add_dymmy_to_database():
@@ -44,7 +45,7 @@ def singleton(cls):
 
 @singleton
 class BarronDatabaseCreator:
-
+    load_dotenv()
     path = os.environ.get("CSV_PATH")
     list_id = 0
     list_header = {
@@ -160,7 +161,8 @@ class BarronDatabaseCreator:
                     )
                     added_vocab.add(vocab_id)
                 else:
-                    current_app.logger.info("400|{} already exist".format(vocab_db))
+                    current_app.logger.info(
+                        "400|{} already exist".format(vocab_db))
 
         self.list_header["edition"] = datetime.utcnow()
         self.list_header["vocab_ids"] = added_vocab
