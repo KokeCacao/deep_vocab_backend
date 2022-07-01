@@ -4,7 +4,7 @@ from flask import current_app
 
 from database import db
 from ..algorithm.vocab_database_creator import BarronDatabaseCreator
-from ..utils.util import send_verification, sha256
+from ..utils.util import send_verification, sha256, parse_kwargs
 
 
 class TestMutation(graphene.Mutation):
@@ -31,6 +31,7 @@ class TestMutation(graphene.Mutation):
 
     @staticmethod
     def mutate(parent, info, **kwargs):
+        kwargs = parse_kwargs(kwargs)
         key = kwargs["key"]
         action = kwargs["action"]
 
