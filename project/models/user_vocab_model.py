@@ -139,7 +139,8 @@ class UserVocabDB(db.Model):
                               with_for_update=False,
                               erase_cache=False):
         q = UserVocabDB.query.filter(
-            UserVocabDB.refresh_time < datetime.utcnow())
+            UserVocabDB.refresh_time < datetime.utcnow()).filter(
+                UserVocabDB.uuid == uuid)
 
         if sorted: q = q.order_by(UserVocabDB.refresh_time.asc())
         if with_for_update: q = q.with_for_update()
