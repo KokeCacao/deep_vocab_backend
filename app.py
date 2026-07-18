@@ -1,5 +1,3 @@
-from sre_constants import SUCCESS
-import eventlet
 import datetime
 import graphene
 import json
@@ -278,7 +276,6 @@ if __name__ == "__main__":
     # load_dotenv=False because we want to load earlier than this
     app.run(host=args.host, port=args.port, debug=True, load_dotenv=False, ssl_context=ssl_context) # this line must execute after @app.route
 else:
-    eventlet.monkey_patch()
     print(bcolors.WARNING + "You are in PRODUCTION mode! Make sure you have correct URIs.")
     print(bcolors.ENDC)
     # app.run will be execute in wsgi.py
